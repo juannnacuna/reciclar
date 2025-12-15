@@ -50,6 +50,10 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.androidx.activity.ktx)
 
+    // Navegación
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
     // Retrofit para Networking (Capa de Datos)
     implementation(libs.retrofit)
     implementation(libs.retrofit2.converter.gson) // Para convertir JSON

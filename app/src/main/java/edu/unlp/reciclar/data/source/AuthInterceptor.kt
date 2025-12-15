@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.data.network
+package edu.unlp.reciclar.data.source
 
 import okhttp3.Interceptor
 import okhttp3.Response

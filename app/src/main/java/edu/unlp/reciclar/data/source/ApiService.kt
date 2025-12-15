@@ -1,6 +1,13 @@
-package edu.unlp.reciclar.data.network
+package edu.unlp.reciclar.data.source
 
-import edu.unlp.reciclar.data.network.model.*
+import edu.unlp.reciclar.data.model.LoginRequest
+import edu.unlp.reciclar.data.model.PosicionResponse
+import edu.unlp.reciclar.data.model.RankingUser
+import edu.unlp.reciclar.data.model.ReclamarResiduoRequest
+import edu.unlp.reciclar.data.model.RefreshTokenRequest
+import edu.unlp.reciclar.data.model.SignupRequest
+import edu.unlp.reciclar.data.model.TokenResponse
+import edu.unlp.reciclar.data.model.UserResponse
 import retrofit2.Response
 import retrofit2.http.*
 

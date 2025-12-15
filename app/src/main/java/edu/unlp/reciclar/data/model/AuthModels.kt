@@ -21,7 +21,7 @@ data class RefreshTokenRequest(
     @SerializedName("refresh") val refreshToken: String
 )
 
-data class UserResponse(
+data class UserData(
     val id: Int,
     val username: String
 )

@@ -1,6 +1,6 @@
 package edu.unlp.reciclar.data.source
 
-import edu.unlp.reciclar.data.model.*
+import edu.unlp.reciclar.data.dto.*
 import retrofit2.Response
 import retrofit2.http.*
 

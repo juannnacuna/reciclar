@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.data.model
+package edu.unlp.reciclar.data.dto
 
 data class Estacion(
     val id: Int,

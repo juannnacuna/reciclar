@@ -6,24 +6,27 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.source.ApiClient
-import edu.unlp.reciclar.data.source.SessionManager
-import edu.unlp.reciclar.data.model.LoginRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import edu.unlp.reciclar.data.network.ApiClient
+import edu.unlp.reciclar.data.network.SessionManager
+import edu.unlp.reciclar.data.repository.AuthRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private lateinit var sessionManager: SessionManager
+    private lateinit var authRepository: AuthRepository
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sessionManager = SessionManager(requireContext())
+
+        // Inyección de dependencias manual (Idealmente esto vendría de un ViewModelFactory)
+        val context = requireContext()
+        val sessionManager = SessionManager(context)
+        val apiService = ApiClient.getApiService(context)
+        authRepository = AuthRepository(apiService, sessionManager)
 
         val etUsername = view.findViewById<TextInputEditText>(R.id.etUsername)
         val etPassword = view.findViewById<TextInputEditText>(R.id.etPassword)
@@ -31,8 +34,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         val tvStatus = view.findViewById<TextView>(R.id.tvStatus)
         val tvGoToSignup = view.findViewById<TextView>(R.id.tvGoToSignup)
 
-        // Verificar sesión existente
-        if (sessionManager.getAccessToken() != null) {
+        // Verificar sesión existente usando el repositorio
+        if (authRepository.isLoggedIn()) {
             findNavController().navigate(R.id.action_loginFragment_to_scanQrFragment)
             return
         }
@@ -53,33 +56,17 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             tvStatus.text = "Iniciando sesión..."
             btnLogin.isEnabled = false
 
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    // MAL. NO HAY INYECCION DE DEPENDENCIAS
-                    // LA VISTA NO PUEDE USAR LA API. DEBERIA SER ASI:
-                    // Fragment -> ViewModel -> Repositorio -> ApiService
-                    val apiService = ApiClient.getApiService(requireContext())
-                    val response = apiService.login(LoginRequest(username, password))
+            // Usamos lifecycleScope para corrutinas ligadas al ciclo de vida del fragmento
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = authRepository.login(username, password)
 
-                    withContext(Dispatchers.Main) {
-                        btnLogin.isEnabled = true
-                        if (response.isSuccessful && response.body() != null) {
-                            val tokens = response.body()!!
-                            sessionManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                            Toast.makeText(context, "Bienvenido $username", Toast.LENGTH_LONG).show()
-                            findNavController().navigate(R.id.action_loginFragment_to_scanQrFragment)
-                        } else {
-                            tvStatus.text = "Error: ${response.code()} - ${response.message()}"
-                        }
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        if (isAdded) { // Verificar si el fragmento sigue activo
-                            btnLogin.isEnabled = true
-                            tvStatus.text = "Error de conexión: ${e.message}"
-                        }
-                        e.printStackTrace()
-                    }
+                btnLogin.isEnabled = true // Reactivar botón siempre
+
+                result.onSuccess {
+                    Toast.makeText(context, "Bienvenido $username", Toast.LENGTH_LONG).show()
+                    findNavController().navigate(R.id.action_loginFragment_to_scanQrFragment)
+                }.onFailure { exception ->
+                    tvStatus.text = "Error: ${exception.message}"
                 }
             }
         }

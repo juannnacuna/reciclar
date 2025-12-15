@@ -6,20 +6,27 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.source.ApiClient
-import edu.unlp.reciclar.data.model.SignupRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import edu.unlp.reciclar.data.network.ApiClient
+import edu.unlp.reciclar.data.network.SessionManager
+import edu.unlp.reciclar.data.repository.AuthRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SignupFragment : Fragment(R.layout.fragment_signup) {
 
+    private lateinit var authRepository: AuthRepository
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Inyección de dependencias manual
+        val context = requireContext()
+        val sessionManager = SessionManager(context)
+        val apiService = ApiClient.getApiService(context)
+        authRepository = AuthRepository(apiService, sessionManager)
 
         val etUsername = view.findViewById<TextInputEditText>(R.id.etSignupUsername)
         val etPassword = view.findViewById<TextInputEditText>(R.id.etSignupPassword)
@@ -38,29 +45,16 @@ class SignupFragment : Fragment(R.layout.fragment_signup) {
             tvStatus.text = "Registrando usuario..."
             btnSignup.isEnabled = false
 
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val apiService = ApiClient.getApiService(requireContext())
-                    val response = apiService.signup(SignupRequest(username, password))
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = authRepository.signup(username, password)
 
-                    withContext(Dispatchers.Main) {
-                        if (isAdded) {
-                            btnSignup.isEnabled = true
-                            if (response.isSuccessful) {
-                                Toast.makeText(context, "Registro exitoso. Inicia sesión.", Toast.LENGTH_LONG).show()
-                                findNavController().popBackStack() // Volver al Login
-                            } else {
-                                tvStatus.text = "Error al registrar: ${response.code()} - ${response.message()}"
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        if (isAdded) {
-                            btnSignup.isEnabled = true
-                            tvStatus.text = "Error de conexión: ${e.message}"
-                        }
-                    }
+                btnSignup.isEnabled = true
+
+                result.onSuccess {
+                    Toast.makeText(context, "Registro exitoso. Inicia sesión.", Toast.LENGTH_LONG).show()
+                    findNavController().popBackStack() // Volver al Login
+                }.onFailure { exception ->
+                    tvStatus.text = "Error al registrar: ${exception.message}"
                 }
             }
         }

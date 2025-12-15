@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.source.ApiClient
-import edu.unlp.reciclar.data.model.ReclamarResiduoRequest
+import edu.unlp.reciclar.data.dto.ReclamarResiduoRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

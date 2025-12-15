@@ -1,6 +1,4 @@
-package edu.unlp.reciclar.data.model
-
-import com.google.gson.annotations.SerializedName
+package edu.unlp.reciclar.data.dto
 
 data class RankingUser(
     val id: Int,

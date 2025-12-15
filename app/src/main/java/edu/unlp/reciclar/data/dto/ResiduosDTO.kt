@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.data.model
+package edu.unlp.reciclar.data.dto
 
 import com.google.gson.annotations.SerializedName
 

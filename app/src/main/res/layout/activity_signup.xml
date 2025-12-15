@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reciclar App"
+        android:text="Crear Cuenta"
         android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp"/>
@@ -21,7 +21,7 @@
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUsername"
+            android:id="@+id/etSignupUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"/>
@@ -34,36 +34,24 @@
         android:layout_marginBottom="24dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPassword"
+            android:id="@+id/etSignupPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnSignup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
+        android:text="Registrarse"
         android:layout_marginBottom="16dp"/>
 
     <TextView
-        android:id="@+id/tvGoToSignup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="¿No tienes cuenta? Regístrate aquí"
-        android:textColor="@color/purple_500"
-        android:textStyle="bold"
-        android:padding="8dp"
-        android:clickable="true"
-        android:focusable="true"/>
-
-    <TextView
-        android:id="@+id/tvStatus"
+        android:id="@+id/tvSignupStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textColor="@android:color/holo_red_dark"
-        android:layout_marginTop="16dp"/>
+        android:textColor="@android:color/holo_red_dark"/>
 
 </LinearLayout>

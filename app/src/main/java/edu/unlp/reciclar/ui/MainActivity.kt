@@ -1,11 +1,13 @@
-package edu.unlp.reciclar
+package edu.unlp.reciclar.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.network.ApiClient
 import edu.unlp.reciclar.data.network.SessionManager
 import edu.unlp.reciclar.data.network.model.LoginRequest
@@ -29,10 +31,18 @@ class MainActivity : AppCompatActivity() {
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvStatus = findViewById<TextView>(R.id.tvStatus)
+        val tvGoToSignup = findViewById<TextView>(R.id.tvGoToSignup)
 
-        // Verificar si ya hay sesión
+        // Verificar si ya hay sesión y navegar directamente
         if (sessionManager.getAccessToken() != null) {
             tvStatus.text = "Usuario ya logueado (Token existente)"
+            navigateToScanQr()
+        }
+        
+        // Navegación a pantalla de registro
+        tvGoToSignup.setOnClickListener {
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent)
         }
 
         btnLogin.setOnClickListener {
@@ -50,8 +60,6 @@ class MainActivity : AppCompatActivity() {
             // Llamada asíncrona (esto debería ir en un ViewModel)
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    // Usamos ApiClient temporalmente (Singleton manual) o instanciamos aquí
-                    // Como el Singleton ApiClient fue rechazado, lo crearé localmente para este ejemplo
                     val apiService = ApiClient.getApiService(this@MainActivity)
                     
                     val response = apiService.login(LoginRequest(username, password))
@@ -63,7 +71,9 @@ class MainActivity : AppCompatActivity() {
                             sessionManager.saveTokens(tokens.accessToken, tokens.refreshToken)
                             tvStatus.text = "¡Login Exitoso!"
                             Toast.makeText(this@MainActivity, "Bienvenido $username", Toast.LENGTH_LONG).show()
-                            // Aquí navegarías a la siguiente pantalla
+                            
+                            // Navegar a la pantalla de ScanQR
+                            navigateToScanQr()
                         } else {
                             tvStatus.text = "Error: ${response.code()} - ${response.message()}"
                         }
@@ -77,5 +87,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun navigateToScanQr() {
+        val intent = Intent(this, ScanQrActivity::class.java)
+        startActivity(intent)
+        finish() // Cierra la pantalla de Login para que no se pueda volver atrás
     }
 }

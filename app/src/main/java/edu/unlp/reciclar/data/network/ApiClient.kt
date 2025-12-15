@@ -7,7 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
     // 10.0.2.2 es la dirección especial del emulador para acceder al localhost de tu PC
-    private const val BASE_URL = "http://10.0.2.2:8000/" 
+    // Configurar con la URL del codespace o del container corriendo localmente
+    private const val BASE_URL = "https://supreme-acorn-6j54wpq969gfrg6p-8000.app.github.dev/"
 
     private var apiService: ApiService? = null
 

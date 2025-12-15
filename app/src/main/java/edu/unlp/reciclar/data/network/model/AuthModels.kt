@@ -9,8 +9,7 @@ data class LoginRequest(
 
 data class SignupRequest(
     val username: String,
-    val password: String,
-    val email: String // Ajustar según los campos requeridos por el backend
+    val password: String
 )
 
 data class TokenResponse(

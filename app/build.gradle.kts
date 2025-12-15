@@ -46,15 +46,18 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Arquitectura y ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-    implementation("androidx.activity:activity-ktx:1.7.2")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.androidx.activity.ktx)
 
     // Retrofit para Networking (Capa de Datos)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Para convertir JSON
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson) // Para convertir JSON
+    implementation(libs.gson)
 
     // Corrutinas (para manejo asíncrono en ViewModel y Repositorio)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Manejo de cámara
+    implementation(libs.play.services.code.scanner)
 }

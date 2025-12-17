@@ -19,12 +19,13 @@ class RankingViewModel(private val rankingRepository: RankingRepository) : ViewM
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun fetchRanking() {
+    fun fetchRanking(tipoResiduo: String? = null) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
 
-            val result = rankingRepository.getRanking()
+            // Pasamos el parámetro al repositorio
+            val result = rankingRepository.getRanking(tipoResiduo = tipoResiduo)
 
             result.onSuccess {
                 _ranking.value = it

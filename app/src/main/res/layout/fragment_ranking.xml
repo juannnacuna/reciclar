@@ -7,11 +7,21 @@
 
     <include layout="@layout/layout_logout_button" />
 
+    <Spinner
+        android:id="@+id/spinnerResidueType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnLogout"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:minHeight="48dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRanking"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/btnLogout"
+        android:layout_below="@+id/spinnerResidueType"
         tools:listitem="@layout/item_ranking" />
 
     <ProgressBar

@@ -10,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.network.ApiClient
-import edu.unlp.reciclar.data.network.SessionManager
+import edu.unlp.reciclar.data.source.ApiClient
+import edu.unlp.reciclar.data.source.SessionManager
 import edu.unlp.reciclar.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 

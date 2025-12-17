@@ -16,6 +16,11 @@ data class RefreshTokenRequest(
     @SerializedName("refresh") val refreshToken: String
 )
 
+data class TokenResponse(
+    @SerializedName("access") val accessToken: String,
+    @SerializedName("refresh") val refreshToken: String?
+)
+
 data class UserData(
     val id: Int,
     val username: String

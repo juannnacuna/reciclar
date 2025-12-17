@@ -16,9 +16,11 @@ object ApiClient {
         if (apiService == null) {
             val sessionManager = SessionManager(context)
             val authInterceptor = AuthInterceptor(sessionManager)
+            val authAuthenticator = AuthAuthenticator(SessionManager(context), apiServiceProvider = { getApiService(context) })
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
+                .authenticator(authAuthenticator)
                 .build()
 
             val retrofit = Retrofit.Builder()

@@ -2,6 +2,7 @@ package edu.unlp.reciclar.data.source
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 class SessionManager(context: Context) {
     private var prefs: SharedPreferences = context.getSharedPreferences("reciclar_prefs", Context.MODE_PRIVATE)
@@ -12,17 +13,17 @@ class SessionManager(context: Context) {
     }
 
     fun saveTokens(accessToken: String, refreshToken: String) {
-        val editor = prefs.edit()
-        editor.putString(KEY_ACCESS_TOKEN, accessToken)
-        editor.putString(KEY_REFRESH_TOKEN, refreshToken)
-        editor.apply()
+        prefs.edit {
+            putString(KEY_ACCESS_TOKEN, accessToken)
+            putString(KEY_REFRESH_TOKEN, refreshToken)
+        }
     }
     
     fun clearTokens() {
-        val editor = prefs.edit()
-        editor.remove(KEY_ACCESS_TOKEN)
-        editor.remove(KEY_REFRESH_TOKEN)
-        editor.apply()
+        prefs.edit {
+            remove(KEY_ACCESS_TOKEN)
+            remove(KEY_REFRESH_TOKEN)
+        }
     }
 
     fun getAccessToken(): String? {
@@ -31,5 +32,11 @@ class SessionManager(context: Context) {
 
     fun getRefreshToken(): String? {
         return prefs.getString(KEY_REFRESH_TOKEN, null)
+    }
+
+    fun saveAccessToken(newAccessToken: String) {
+        prefs.edit {
+            putString(KEY_ACCESS_TOKEN, newAccessToken)
+        }
     }
 }

@@ -1,6 +1,7 @@
 package edu.unlp.reciclar.data.source
 
 import edu.unlp.reciclar.data.dto.*
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -21,7 +22,7 @@ interface ApiService {
     suspend fun signup(@Body request: SignupRequest): Response<UserData>
 
     @POST("api/token/refresh/")
-    suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<TokenResponse>
+    fun refreshToken(@Body request: RefreshTokenRequest): Call<TokenResponse>
 
     // Estaciones
 

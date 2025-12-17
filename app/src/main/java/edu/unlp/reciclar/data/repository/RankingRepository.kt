@@ -2,6 +2,7 @@ package edu.unlp.reciclar.data.repository
 
 import edu.unlp.reciclar.data.dto.toDomainModel
 import edu.unlp.reciclar.data.source.ApiService
+import edu.unlp.reciclar.data.source.SessionManager
 import edu.unlp.reciclar.domain.model.RankingEntry
 
 class RankingRepository(private val apiService: ApiService) {
@@ -18,6 +19,11 @@ class RankingRepository(private val apiService: ApiService) {
                 } else {
                     Result.failure(Exception("La respuesta del ranking está vacía"))
                 }
+                /*
+            } else if (response.code() == 401) {
+                SessionManager.
+
+                 */
             } else {
                 Result.failure(Exception("Error al obtener el ranking: ${response.code()}"))
             }

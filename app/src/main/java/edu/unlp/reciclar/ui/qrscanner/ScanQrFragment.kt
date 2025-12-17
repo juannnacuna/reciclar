@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.ui
+package edu.unlp.reciclar.ui.qrscanner
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,41 +7,77 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.dto.ReclamarResiduoRequest
+import edu.unlp.reciclar.data.repository.ResiduosRepository
 import edu.unlp.reciclar.data.source.ApiClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import edu.unlp.reciclar.ui.BaseFragment
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ScanQrFragment : BaseFragment() {
 
     private lateinit var tvScanResult: TextView
     private lateinit var btnClaimPoints: Button
-    private var scannedResiduoId: String? = null
+    private lateinit var btnScanQr: Button
+    private lateinit var viewModel: ScanQrViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflamos el layout manualmente, igual que en RankingFragment
         return inflater.inflate(R.layout.fragment_scan_qr, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState) // Importante llamar al super
+        super.onViewCreated(view, savedInstanceState)
 
-        // 1. Configurar el botón de logout usando la lógica del BaseFragment
+        // Configuración del botón de logout (heredado de BaseFragment)
         setupLogoutButton(view, R.id.action_scanQrFragment_to_loginFragment)
 
         tvScanResult = view.findViewById(R.id.tvScanResult)
-        val btnScanQr = view.findViewById<Button>(R.id.btnScanQr)
-        btnClaimPoints = view.findViewById<Button>(R.id.btnClaimPoints)
+        btnScanQr = view.findViewById(R.id.btnScanQr)
+        btnClaimPoints = view.findViewById(R.id.btnClaimPoints)
 
-        // Configurar el scanner de Google Play Services
+        // Inicialización del ViewModel usando la Factory
+        val apiService = ApiClient.getApiService(requireContext())
+        val repository = ResiduosRepository(apiService)
+        val factory = ScanQrViewModelFactory(repository)
+        
+        viewModel = ViewModelProvider(this, factory)[ScanQrViewModel::class.java]
+
+        setupObservers()
+        setupListeners()
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.statusMessage.collect { message ->
+                        tvScanResult.text = message
+                    }
+                }
+                launch {
+                    viewModel.isClaimButtonVisible.collect { isVisible ->
+                        btnClaimPoints.visibility = if (isVisible) View.VISIBLE else View.GONE
+                    }
+                }
+                launch {
+                    viewModel.isLoading.collect { isLoading ->
+                        btnClaimPoints.isEnabled = !isLoading
+                        btnScanQr.isEnabled = !isLoading
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupListeners() {
         val scanner = GmsBarcodeScanning.getClient(requireContext())
 
         btnScanQr.setOnClickListener {
@@ -49,58 +85,21 @@ class ScanQrFragment : BaseFragment() {
                 .addOnSuccessListener { barcode ->
                     val rawValue = barcode.rawValue
                     if (rawValue != null) {
-                        scannedResiduoId = rawValue
-                        tvScanResult.text = "Código detectado: $rawValue"
-                        btnClaimPoints.visibility = View.VISIBLE
-                        Toast.makeText(context, "QR Escaneado correctamente", Toast.LENGTH_SHORT).show()
+                        viewModel.onQrScanned(rawValue)
                     } else {
-                        tvScanResult.text = "Error: El código QR está vacío"
+                        viewModel.onScanError("Error: El código QR está vacío")
                     }
                 }
                 .addOnCanceledListener {
                     Toast.makeText(context, "Escaneo cancelado", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
-                    tvScanResult.text = "Error al iniciar escáner: ${e.message}"
+                    viewModel.onScanError("Error al iniciar escáner: ${e.message}")
                 }
         }
 
         btnClaimPoints.setOnClickListener {
-            scannedResiduoId?.let { id ->
-                reclamarPuntos(id)
-            }
-        }
-    }
-
-    private fun reclamarPuntos(idResiduo: String) {
-        tvScanResult.text = "Reclamando puntos..."
-        btnClaimPoints.isEnabled = false
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val apiService = ApiClient.getApiService(requireContext())
-                val response = apiService.reclamarResiduo(ReclamarResiduoRequest(idResiduo))
-
-                withContext(Dispatchers.Main) {
-                    if (isAdded) {
-                        btnClaimPoints.isEnabled = true
-                        if (response.isSuccessful) {
-                            tvScanResult.text = "¡Éxito! Puntos sumados a tu cuenta."
-                            btnClaimPoints.visibility = View.GONE
-                            scannedResiduoId = null // Reset
-                        } else {
-                            tvScanResult.text = "Error al reclamar: ${response.code()}"
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    if (isAdded) {
-                        btnClaimPoints.isEnabled = true
-                        tvScanResult.text = "Error de conexión: ${e.message}"
-                    }
-                }
-            }
+            viewModel.reclamarPuntos()
         }
     }
 }

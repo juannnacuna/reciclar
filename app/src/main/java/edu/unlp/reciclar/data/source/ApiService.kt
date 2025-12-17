@@ -57,8 +57,8 @@ interface ApiService {
     ): Response<List<RankingUser>>
 
     // Residuos
-    @POST("api/residuos/reclamar/")
-    suspend fun reclamarResiduo(@Body request: ReclamarResiduoRequest): Response<Unit> // Ajustar Response si devuelve algo
+    @POST("api/residuo/reclamar/")
+    suspend fun reclamarResiduo(@Body request: ReclamarResiduoRequest): Response<ReclamarResiduoResponse>
 
     @GET("api/residuos/")
     suspend fun getResiduosTotal(): Response<List<TotalResiduos>>

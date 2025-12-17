@@ -9,7 +9,7 @@ class AuthInterceptor(private val sessionManager: SessionManager) : Interceptor 
 
         // Si tenemos un token, lo agregamos al header
         sessionManager.getAccessToken()?.let { token ->
-            requestBuilder.addHeader("jwtAuth", token)
+            requestBuilder.addHeader("Authorization", "Bearer $token")
         }
 
         return chain.proceed(requestBuilder.build())

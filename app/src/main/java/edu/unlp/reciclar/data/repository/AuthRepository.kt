@@ -18,12 +18,18 @@ class AuthRepository(
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.login(LoginRequest(username, password))
-                if (response.isSuccessful && response.body() != null) {
-                    val tokens = response.body()!!
-                    sessionManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                    Result.success(Unit)
+                if (response.isSuccessful) {
+                    val tokens = response.body()
+                    // Validación explícita de los tokens
+                    if (tokens != null && !tokens.accessToken.isNullOrBlank() && !tokens.refreshToken.isNullOrBlank()) {
+                        sessionManager.saveTokens(tokens.accessToken, tokens.refreshToken)
+                        Result.success(Unit)
+                    } else {
+                        // La respuesta fue exitosa pero el cuerpo es inválido o no contiene los tokens
+                        Result.failure(Exception("Respuesta inválida del servidor"))
+                    }
                 } else {
-                    Result.failure(Exception("Error Login: ${response.code()} ${response.message()}"))
+                    Result.failure(Exception("Error de inicio de sesión: ${response.code()} ${response.message()}"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)
@@ -38,7 +44,7 @@ class AuthRepository(
                 if (response.isSuccessful) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(Exception("Error Signup: ${response.code()} ${response.message()}"))
+                    Result.failure(Exception("Error al registrarse: ${response.code()} ${response.message()}"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)
@@ -55,10 +61,8 @@ class AuthRepository(
             try {
                 val refreshToken = sessionManager.getRefreshToken()
                 if (refreshToken != null) {
-                    // Intentamos avisar al backend
                     apiService.logout(RefreshTokenRequest(refreshToken))
                 }
-                // Independientemente del resultado, borramos los tokens locales
                 sessionManager.clearTokens()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -75,7 +79,7 @@ class AuthRepository(
                 if (response.isSuccessful && response.body() != null) {
                     Result.success(response.body()!!)
                 } else {
-                    Result.failure(Exception("Error fetching user data: ${response.code()}"))
+                    Result.failure(Exception("Error al obtener datos de usuario: ${response.code()}"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

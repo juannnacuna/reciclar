@@ -43,7 +43,7 @@ interface ApiService {
     @GET("api/ranking/")
     suspend fun getRanking(
         @Query("tipo_residuo") tipoResiduo: String? = null
-    ): Response<List<RankingUser>>
+    ): Response<List<RankingResponse>>
 
     @GET("api/ranking/posicion/")
     suspend fun getPosicionUsuario(

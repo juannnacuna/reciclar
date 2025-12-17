@@ -12,11 +12,6 @@ data class SignupRequest(
     val password: String
 )
 
-data class TokenResponse(
-    @SerializedName("access") val accessToken: String,
-    @SerializedName("refresh") val refreshToken: String
-)
-
 data class RefreshTokenRequest(
     @SerializedName("refresh") val refreshToken: String
 )

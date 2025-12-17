@@ -1,28 +1,41 @@
 package edu.unlp.reciclar.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.source.ApiClient
 import edu.unlp.reciclar.data.dto.ReclamarResiduoRequest
+import edu.unlp.reciclar.data.source.ApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
+class ScanQrFragment : BaseFragment() {
 
     private lateinit var tvScanResult: TextView
     private lateinit var btnClaimPoints: Button
     private var scannedResiduoId: String? = null
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflamos el layout manualmente, igual que en RankingFragment
+        return inflater.inflate(R.layout.fragment_scan_qr, container, false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState) // Importante llamar al super
+
+        // 1. Configurar el botón de logout usando la lógica del BaseFragment
+        setupLogoutButton(view, R.id.action_scanQrFragment_to_loginFragment)
 
         tvScanResult = view.findViewById(R.id.tvScanResult)
         val btnScanQr = view.findViewById<Button>(R.id.btnScanQr)
@@ -34,7 +47,6 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
         btnScanQr.setOnClickListener {
             scanner.startScan()
                 .addOnSuccessListener { barcode ->
-                    // Éxito: Obtenemos el valor raw del QR
                     val rawValue = barcode.rawValue
                     if (rawValue != null) {
                         scannedResiduoId = rawValue
@@ -46,11 +58,9 @@ class ScanQrFragment : Fragment(R.layout.fragment_scan_qr) {
                     }
                 }
                 .addOnCanceledListener {
-                    // El usuario canceló
                     Toast.makeText(context, "Escaneo cancelado", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
-                    // Error general
                     tvScanResult.text = "Error al iniciar escáner: ${e.message}"
                 }
         }

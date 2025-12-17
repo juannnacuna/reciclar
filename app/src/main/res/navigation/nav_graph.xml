@@ -14,21 +14,48 @@
             android:id="@+id/action_loginFragment_to_signupFragment"
             app:destination="@id/signupFragment" />
         <action
-            android:id="@+id/action_loginFragment_to_scanQrFragment"
-            app:destination="@id/scanQrFragment"
+            android:id="@+id/action_loginFragment_to_rankingFragment"
+            app:destination="@id/rankingFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_scanQrFragment"
+            app:destination="@id/scanQrFragment" />
     </fragment>
-    
+
     <fragment
         android:id="@+id/signupFragment"
         android:name="edu.unlp.reciclar.ui.SignupFragment"
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup" />
-        
+
     <fragment
         android:id="@+id/scanQrFragment"
         android:name="edu.unlp.reciclar.ui.ScanQrFragment"
         android:label="fragment_scan_qr"
-        tools:layout="@layout/fragment_scan_qr" />
+        tools:layout="@layout/fragment_scan_qr" >
+        <action
+            android:id="@+id/action_scanQrFragment_to_rankingFragment"
+            app:destination="@id/rankingFragment" />
+        <action
+            android:id="@+id/action_scanQrFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/rankingFragment"
+        android:name="edu.unlp.reciclar.ui.ranking.RankingFragment"
+        android:label="fragment_ranking"
+        tools:layout="@layout/fragment_ranking" >
+        <action
+            android:id="@+id/action_rankingFragment_to_scanQrFragment"
+            app:destination="@id/scanQrFragment" />
+        <action
+            android:id="@+id/action_rankingFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

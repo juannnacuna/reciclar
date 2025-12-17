@@ -17,7 +17,8 @@ class RankingAdapter(private var rankingList: List<RankingEntry>) : RecyclerView
 
     override fun onBindViewHolder(holder: RankingViewHolder, position: Int) {
         val rankingEntry = rankingList[position]
-        holder.bind(rankingEntry)
+        // La posición del adapter es 0-indexada, así que le sumamos 1
+        holder.bind(rankingEntry, position + 1)
     }
 
     override fun getItemCount(): Int = rankingList.size
@@ -28,10 +29,12 @@ class RankingAdapter(private var rankingList: List<RankingEntry>) : RecyclerView
     }
 
     class RankingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val positionTextView: TextView = itemView.findViewById(R.id.tvPosition)
         private val usernameTextView: TextView = itemView.findViewById(R.id.tvUsername)
         private val pointsTextView: TextView = itemView.findViewById(R.id.tvPoints)
 
-        fun bind(rankingEntry: RankingEntry) {
+        fun bind(rankingEntry: RankingEntry, position: Int) {
+            positionTextView.text = "$position."
             usernameTextView.text = rankingEntry.username
             pointsTextView.text = rankingEntry.total_puntos.toString()
         }

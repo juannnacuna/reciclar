@@ -6,9 +6,10 @@ import edu.unlp.reciclar.domain.model.RankingEntry
 
 class RankingRepository(private val apiService: ApiService) {
 
-    suspend fun getRanking(): Result<List<RankingEntry>> {
+    suspend fun getRanking(tipoResiduo: String? = null): Result<List<RankingEntry>> {
         return try {
-            val response = apiService.getRanking()
+            // Pasamos el parámetro a la llamada de la API
+            val response = apiService.getRanking(tipoResiduo = tipoResiduo)
             if (response.isSuccessful) {
                 val rankingResponses = response.body()
                 if (rankingResponses != null) {

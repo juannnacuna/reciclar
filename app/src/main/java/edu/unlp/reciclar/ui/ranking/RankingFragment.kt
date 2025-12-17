@@ -56,14 +56,14 @@ class RankingFragment : BaseFragment() {
 
     private fun setupSpinner(view: View) {
         val spinner = view.findViewById<Spinner>(R.id.spinnerResidueType)
-        val residueTypes = listOf("Todos", "Plastico", "Vidrio", "Papel", "Metal")
+        val residueTypes = listOf("Todos", "Plastico", "Vidrio", "Papel", "Metal", "Carton")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, residueTypes)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedType = if (position == 0) null else residueTypes[position]
+                val selectedType = if (residueTypes[position] === "Todos") null else residueTypes[position]
                 viewModel.fetchRanking(tipoResiduo = selectedType)
             }
 

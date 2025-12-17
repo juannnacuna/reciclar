@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="edu.unlp.reciclar.ui.LoginFragment"
+        android:name="edu.unlp.reciclar.ui.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login">
         <action
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/signupFragment"
-        android:name="edu.unlp.reciclar.ui.SignupFragment"
+        android:name="edu.unlp.reciclar.ui.signup.SignupFragment"
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup" />
 

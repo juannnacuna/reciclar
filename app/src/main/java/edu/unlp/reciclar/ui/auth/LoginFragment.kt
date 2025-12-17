@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.ui
+package edu.unlp.reciclar.ui.auth
 
 import android.os.Bundle
 import android.view.View

@@ -1,6 +1,7 @@
-package edu.unlp.reciclar.data.source
+package edu.unlp.reciclar.data.remote
 
 import android.content.Context
+import edu.unlp.reciclar.data.source.SessionManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,7 +17,9 @@ object ApiClient {
         if (apiService == null) {
             val sessionManager = SessionManager(context)
             val authInterceptor = AuthInterceptor(sessionManager)
-            val authAuthenticator = AuthAuthenticator(SessionManager(context), apiServiceProvider = { getApiService(context) })
+            val authAuthenticator = AuthAuthenticator(
+                SessionManager(context),
+                apiServiceProvider = { getApiService(context) })
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)

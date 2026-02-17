@@ -14,7 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.repository.ResiduosRepository
-import edu.unlp.reciclar.data.source.ApiClient
+import edu.unlp.reciclar.data.remote.ApiClient
 import edu.unlp.reciclar.ui.BaseFragment
 import kotlinx.coroutines.launch
 

@@ -1,5 +1,6 @@
-package edu.unlp.reciclar.data.source
+package edu.unlp.reciclar.data.remote
 
+import edu.unlp.reciclar.data.source.SessionManager
 import okhttp3.Interceptor
 import okhttp3.Response
 

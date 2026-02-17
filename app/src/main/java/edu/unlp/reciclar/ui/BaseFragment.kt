@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.repository.AuthRepository
-import edu.unlp.reciclar.data.source.ApiClient
+import edu.unlp.reciclar.data.remote.ApiClient
 import edu.unlp.reciclar.data.source.SessionManager
 import kotlinx.coroutines.launch
 

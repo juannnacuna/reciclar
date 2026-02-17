@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.data.dto
+package edu.unlp.reciclar.data.remote.dto
 
 data class PuntosUsuario(
     val puntos: Int

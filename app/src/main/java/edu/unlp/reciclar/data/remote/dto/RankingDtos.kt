@@ -1,4 +1,4 @@
-package edu.unlp.reciclar.data.dto
+package edu.unlp.reciclar.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 import edu.unlp.reciclar.domain.model.RankingEntry

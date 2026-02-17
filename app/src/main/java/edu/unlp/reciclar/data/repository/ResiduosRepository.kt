@@ -1,10 +1,10 @@
 package edu.unlp.reciclar.data.repository
 
 import com.google.gson.Gson
-import edu.unlp.reciclar.data.dto.QrData
-import edu.unlp.reciclar.data.dto.ReclamarResiduoRequest
-import edu.unlp.reciclar.data.dto.ReclamarResiduoResponse
-import edu.unlp.reciclar.data.source.ApiService
+import edu.unlp.reciclar.data.remote.dto.QrData
+import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoRequest
+import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoResponse
+import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.domain.model.ResultadoReclamo
 
 class ResiduosRepository(private val apiService: ApiService) {

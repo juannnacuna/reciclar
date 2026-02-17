@@ -1,7 +1,7 @@
 package edu.unlp.reciclar.data.repository
 
-import edu.unlp.reciclar.data.dto.toDomainModel
-import edu.unlp.reciclar.data.source.ApiService
+import edu.unlp.reciclar.data.remote.dto.toDomainModel
+import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.domain.model.RankingEntry
 
 class RankingRepository(private val apiService: ApiService) {

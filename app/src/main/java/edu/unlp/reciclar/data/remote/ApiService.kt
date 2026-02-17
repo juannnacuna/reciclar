@@ -1,6 +1,18 @@
-package edu.unlp.reciclar.data.source
+package edu.unlp.reciclar.data.remote
 
-import edu.unlp.reciclar.data.dto.*
+import edu.unlp.reciclar.data.remote.dto.Estacion
+import edu.unlp.reciclar.data.remote.dto.LoginRequest
+import edu.unlp.reciclar.data.remote.dto.PosicionResponse
+import edu.unlp.reciclar.data.remote.dto.PuntosUsuario
+import edu.unlp.reciclar.data.remote.dto.RankingResponse
+import edu.unlp.reciclar.data.remote.dto.RankingUser
+import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoRequest
+import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoResponse
+import edu.unlp.reciclar.data.remote.dto.RefreshTokenRequest
+import edu.unlp.reciclar.data.remote.dto.SignupRequest
+import edu.unlp.reciclar.data.remote.dto.TokenResponse
+import edu.unlp.reciclar.data.remote.dto.TotalResiduos
+import edu.unlp.reciclar.data.remote.dto.UserData
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*

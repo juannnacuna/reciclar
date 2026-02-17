@@ -1,8 +1,9 @@
-package edu.unlp.reciclar.data.source
+package edu.unlp.reciclar.data.remote
 
 import okhttp3.*
-import edu.unlp.reciclar.data.dto.RefreshTokenRequest
+import edu.unlp.reciclar.data.remote.dto.RefreshTokenRequest
 import android.util.Log
+import edu.unlp.reciclar.data.source.SessionManager
 
 private const val TAG = "AuthAuthenticatorDebug"
 class AuthAuthenticator(

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.repository.RankingRepository
-import edu.unlp.reciclar.data.source.ApiClient
+import edu.unlp.reciclar.data.remote.ApiClient
 import edu.unlp.reciclar.ui.BaseFragment
 
 class RankingFragment : BaseFragment() {

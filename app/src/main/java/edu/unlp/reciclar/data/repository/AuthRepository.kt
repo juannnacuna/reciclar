@@ -1,11 +1,11 @@
 package edu.unlp.reciclar.data.repository
 
-import edu.unlp.reciclar.data.source.ApiService
+import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.data.source.SessionManager
-import edu.unlp.reciclar.data.dto.LoginRequest
-import edu.unlp.reciclar.data.dto.RefreshTokenRequest
-import edu.unlp.reciclar.data.dto.SignupRequest
-import edu.unlp.reciclar.data.dto.UserData
+import edu.unlp.reciclar.data.remote.dto.LoginRequest
+import edu.unlp.reciclar.data.remote.dto.RefreshTokenRequest
+import edu.unlp.reciclar.data.remote.dto.SignupRequest
+import edu.unlp.reciclar.data.remote.dto.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

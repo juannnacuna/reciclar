@@ -14,7 +14,7 @@ interface CanjeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCanje(canje: Canje): Long
 
-    @Query("SELECT * FROM cupones")
+    @Query("SELECT * FROM canjes")
     suspend fun getAllCanjes(): List<Canje>
 
     @Transaction

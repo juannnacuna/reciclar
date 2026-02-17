@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,17 @@ android {
         version = release(36)
     }
 
+    // 1. Cargamos el archivo local.properties
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
+    // 2. Habilitamos la generación de la clase BuildConfig
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "edu.unlp.reciclar"
         minSdk = 24
@@ -18,6 +31,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // 3. Extraemos la URL y la inyectamos.
+        // ¡CUIDADO ACÁ! Necesitas escapar las comillas dobles ("\"...\"")
+        // porque el valor final en Kotlin tiene que ser un String.
+        val baseUrl = localProperties.getProperty("BASE_URL")
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {

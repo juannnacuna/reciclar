@@ -5,11 +5,10 @@ import edu.unlp.reciclar.data.source.SessionManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import edu.unlp.reciclar.BuildConfig
 
 object ApiClient {
-    // 10.0.2.2 es la dirección especial del emulador para acceder al localhost de tu PC
-    // Configurar con la URL del codespace o del container corriendo localmente
-    private const val BASE_URL = "https://supreme-acorn-6j54wpq969gfrg6p-8000.app.github.dev/"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     private var apiService: ApiService? = null
 

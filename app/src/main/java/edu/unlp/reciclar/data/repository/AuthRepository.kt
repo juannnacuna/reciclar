@@ -11,7 +11,8 @@ import kotlinx.coroutines.withContext
 
 class AuthRepository(
     private val apiService: ApiService,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val userRepository: UserRepository
 ) {
 
     suspend fun login(username: String, password: String): Result<Unit> {
@@ -64,6 +65,7 @@ class AuthRepository(
                     apiService.logout(RefreshTokenRequest(refreshToken))
                 }
                 sessionManager.clearTokens()
+                userRepository.clearCache()
                 Result.success(Unit)
             } catch (e: Exception) {
                 sessionManager.clearTokens()
@@ -72,18 +74,4 @@ class AuthRepository(
         }
     }
 
-    suspend fun getUserData(): Result<UserData> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = apiService.getUserData()
-                if (response.isSuccessful && response.body() != null) {
-                    Result.success(response.body()!!)
-                } else {
-                    Result.failure(Exception("Error al obtener datos de usuario: ${response.code()}"))
-                }
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
 }

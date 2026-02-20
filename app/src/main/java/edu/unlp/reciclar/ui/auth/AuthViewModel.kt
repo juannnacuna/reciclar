@@ -1,25 +1,31 @@
 package edu.unlp.reciclar.ui.auth
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.repository.AuthRepository
-import edu.unlp.reciclar.utils.Event
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
 
-    private val _logoutEvent = MutableLiveData<Event<Result<Unit>>>()
-    val logoutEvent: LiveData<Event<Result<Unit>>> = _logoutEvent
+    // Channel en lugar de LiveData<Event<...>>:
+    // - Channel.BUFFERED garantiza que el evento no se pierda aunque nadie esté
+    //   coleccionando en ese momento exacto.
+    // - receiveAsFlow() lo expone como Flow — Compose lo consume con collect
+    //   dentro de un LaunchedEffect. A diferencia de StateFlow, un Channel
+    //   entrega cada evento exactamente una vez (one-shot), sin necesidad del
+    //   wrapper Event<T> que usábamos antes.
+    private val _logoutEvent = Channel<Result<Unit>>(Channel.BUFFERED)
+    val logoutEvent = _logoutEvent.receiveAsFlow()
 
     fun onLogoutClicked() {
         viewModelScope.launch {
             val result = authRepository.logout()
-            _logoutEvent.value = Event(result) // Emitimos el resultado como un evento
+            _logoutEvent.send(result)
         }
     }
 }

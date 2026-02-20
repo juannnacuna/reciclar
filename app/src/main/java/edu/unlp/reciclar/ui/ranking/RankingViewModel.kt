@@ -1,33 +1,37 @@
 package edu.unlp.reciclar.ui.ranking
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.repository.RankingRepository
 import edu.unlp.reciclar.domain.model.RankingEntry
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RankingViewModel @Inject constructor(private val rankingRepository: RankingRepository) : ViewModel() {
 
-    private val _ranking = MutableLiveData<List<RankingEntry>>()
-    val ranking: LiveData<List<RankingEntry>> = _ranking
+    // StateFlow en lugar de LiveData:
+    // - Es nativo de corrutinas (no depende de androidx.lifecycle)
+    // - Compose lo observa con collectAsStateWithLifecycle()
+    // - Siempre tiene un valor inicial (no puede ser nulo implícitamente)
+    private val _ranking = MutableStateFlow<List<RankingEntry>>(emptyList())
+    val ranking: StateFlow<List<RankingEntry>> = _ranking.asStateFlow()
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
 
     fun fetchRanking(tipoResiduo: String? = null) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
 
-            // Pasamos el parámetro al repositorio
             val result = rankingRepository.getRanking(tipoResiduo = tipoResiduo)
 
             result.onSuccess {

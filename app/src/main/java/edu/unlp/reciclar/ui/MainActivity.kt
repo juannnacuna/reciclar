@@ -1,35 +1,19 @@
 package edu.unlp.reciclar.ui
 
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import dagger.hilt.android.AndroidEntryPoint
-import edu.unlp.reciclar.R
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.rankingFragment, R.id.scanQrFragment -> {
-                    bottomNavigationView.visibility = View.VISIBLE
-                }
-                else -> {
-                    bottomNavigationView.visibility = View.GONE
-                }
-            }
+        // setContent reemplaza setContentView(R.layout.activity_main).
+        // Todo el árbol de UI es Compose desde aquí.
+        // ComponentActivity en lugar de AppCompatActivity — suficiente para Compose.
+        setContent {
+            MainApp()
         }
     }
 }

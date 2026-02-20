@@ -9,7 +9,7 @@ data class UsuarioConCuponesCanjeados(
     @Embedded val usuario: Usuario,
     @Relation(
         entity = Canje::class,
-        parentColumn = "localId",
+        parentColumn = "id",
         entityColumn = "usuarioId"
     )
     val cuponesCanjeados: List<CanjeConDetalle>

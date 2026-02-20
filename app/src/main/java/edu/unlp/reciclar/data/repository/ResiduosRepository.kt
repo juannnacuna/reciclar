@@ -7,7 +7,10 @@ import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoResponse
 import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.domain.model.ResultadoReclamo
 
-class ResiduosRepository(private val apiService: ApiService) {
+class ResiduosRepository(
+    private val apiService: ApiService,
+    private val usuarioRepository: UserRepository
+) {
 
     suspend fun reclamarResiduo(rawJson: String): Result<ResultadoReclamo> {
         // Intenta parsear el QR
@@ -20,6 +23,7 @@ class ResiduosRepository(private val apiService: ApiService) {
         val response = apiService.reclamarResiduo(ReclamarResiduoRequest(qrData.id))
 
         if (response.isSuccessful) {
+            usuarioRepository.agregarPuntos(qrData.puntos)
             return Result.success(
                 ResultadoReclamo(
                     mensajeServidor = response.body()?.mensajeExito ?: "Residuo reclamado exitosamente",

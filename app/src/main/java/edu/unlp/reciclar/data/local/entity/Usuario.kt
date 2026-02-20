@@ -7,8 +7,7 @@ import edu.unlp.reciclar.data.remote.dto.PuntosUsuario
 
 @Entity(tableName = "usuarios")
 data class Usuario(
-    @PrimaryKey(autoGenerate = true) val localId: Int = 0,
-    val remoteId: Int, // mappeada en repository, viene de la api
+    @PrimaryKey val id: Int,
     val username: String, // mappeada en repository, viene de la api
     val puntosTotales: Int,
     val puntosDisponibles: Int

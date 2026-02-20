@@ -18,10 +18,16 @@ interface UsuarioDao {
     @Update
     suspend fun updateUsuario(usuario: Usuario)
 
+    @Query("UPDATE usuarios SET puntosTotales = puntosTotales + :puntosASumar AND puntosDisponibles = puntosDisponibles + :puntosASumar WHERE id = :id")
+    suspend fun agregarPuntos(id: Int, puntosASumar: Int)
+
+    @Query("SELECT * FROM usuarios WHERE id = :id")
+    suspend fun getUsuarioById(id: String): Usuario?
+
     @Query("SELECT * FROM usuarios")
     suspend fun getAllUsuarios(): List<Usuario>
 
     @Transaction
-    @Query("SELECT * FROM usuarios WHERE localId = :id")
+    @Query("SELECT * FROM usuarios WHERE id = :id")
     fun getUsuarioConCanjes(id: String): Flow<UsuarioConCuponesCanjeados>
 }

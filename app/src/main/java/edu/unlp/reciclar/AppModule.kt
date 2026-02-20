@@ -134,7 +134,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideResiduosRepository(apiService: ApiService): ResiduosRepository {
-        return ResiduosRepository(apiService)
+    fun provideResiduosRepository(apiService: ApiService, userRepository: UserRepository): ResiduosRepository {
+        return ResiduosRepository(apiService, userRepository)
     }
 }

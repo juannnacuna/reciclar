@@ -7,7 +7,7 @@ import androidx.room.ForeignKey
     tableName = "canjes",
     primaryKeys = ["usuarioId", "cuponId"],
     foreignKeys = [
-        ForeignKey(entity = Usuario::class, parentColumns = ["localId"], childColumns = ["usuarioId"]),
+        ForeignKey(entity = Usuario::class, parentColumns = ["id"], childColumns = ["usuarioId"]),
         ForeignKey(entity = Cupon::class, parentColumns = ["id"], childColumns = ["cuponId"])
     ]
 )

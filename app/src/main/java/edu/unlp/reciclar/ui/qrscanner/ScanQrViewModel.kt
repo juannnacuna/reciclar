@@ -2,12 +2,15 @@ package edu.unlp.reciclar.ui.qrscanner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.repository.ResiduosRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ScanQrViewModel(private val repository: ResiduosRepository) : ViewModel() {
+@HiltViewModel
+class ScanQrViewModel @Inject constructor(private val repository: ResiduosRepository) : ViewModel() {
 
     private val _statusMessage = MutableStateFlow("Presiona el botón para escanear un código QR")
     val statusMessage: StateFlow<String> = _statusMessage

@@ -4,11 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.repository.RankingRepository
 import edu.unlp.reciclar.domain.model.RankingEntry
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RankingViewModel(private val rankingRepository: RankingRepository) : ViewModel() {
+@HiltViewModel
+class RankingViewModel @Inject constructor(private val rankingRepository: RankingRepository) : ViewModel() {
 
     private val _ranking = MutableLiveData<List<RankingEntry>>()
     val ranking: LiveData<List<RankingEntry>> = _ranking

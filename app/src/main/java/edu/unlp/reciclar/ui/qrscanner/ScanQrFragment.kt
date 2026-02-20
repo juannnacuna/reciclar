@@ -7,23 +7,23 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import dagger.hilt.android.AndroidEntryPoint
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.repository.ResiduosRepository
-import edu.unlp.reciclar.data.remote.ApiClient
 import edu.unlp.reciclar.ui.BaseFragment
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ScanQrFragment : BaseFragment() {
 
     private lateinit var tvScanResult: TextView
     private lateinit var btnClaimPoints: Button
     private lateinit var btnScanQr: Button
-    private lateinit var viewModel: ScanQrViewModel
+    private val viewModel: ScanQrViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,13 +42,6 @@ class ScanQrFragment : BaseFragment() {
         tvScanResult = view.findViewById(R.id.tvScanResult)
         btnScanQr = view.findViewById(R.id.btnScanQr)
         btnClaimPoints = view.findViewById(R.id.btnClaimPoints)
-
-        // Inicialización del ViewModel usando la Factory
-        val apiService = ApiClient.getApiService(requireContext())
-        val repository = ResiduosRepository(apiService)
-        val factory = ScanQrViewModelFactory(repository)
-        
-        viewModel = ViewModelProvider(this, factory)[ScanQrViewModel::class.java]
 
         setupObservers()
         setupListeners()

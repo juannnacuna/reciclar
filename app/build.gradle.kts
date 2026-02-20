@@ -3,7 +3,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -12,13 +13,12 @@ android {
         version = release(36)
     }
 
-    // 1. Cargamos el archivo local.properties
     val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
         localProperties.load(localPropertiesFile.inputStream())
     }
-    // 2. Habilitamos la generación de la clase BuildConfig
+
     buildFeatures {
         buildConfig = true
     }
@@ -32,9 +32,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // 3. Extraemos la URL y la inyectamos.
-        // ¡CUIDADO ACÁ! Necesitas escapar las comillas dobles ("\"...\"")
-        // porque el valor final en Kotlin tiene que ser un String.
         val baseUrl = localProperties.getProperty("BASE_URL")
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
@@ -85,8 +82,12 @@ dependencies {
     // Manejo de cámara
     implementation(libs.play.services.code.scanner)
 
-    // dependencias Room
+    // Dependencias Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    // Dependencias Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }

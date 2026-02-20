@@ -2,12 +2,19 @@ package edu.unlp.reciclar.ui.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.repository.AuthRepository
+import edu.unlp.reciclar.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignupViewModel(private val repository: AuthRepository) : ViewModel() {
+@HiltViewModel
+class SignupViewModel @Inject constructor(
+    private val repository: AuthRepository,
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     private val _signupState = MutableStateFlow<SignupState>(SignupState.Idle)
     val signupState: StateFlow<SignupState> = _signupState

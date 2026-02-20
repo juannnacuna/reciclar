@@ -9,17 +9,17 @@ import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.repository.RankingRepository
-import edu.unlp.reciclar.data.remote.ApiClient
 import edu.unlp.reciclar.ui.BaseFragment
 
+@AndroidEntryPoint
 class RankingFragment : BaseFragment() {
 
-    private lateinit var viewModel: RankingViewModel
+    private val viewModel: RankingViewModel by viewModels()
     private lateinit var rankingAdapter: RankingAdapter
 
     override fun onCreateView(
@@ -34,11 +34,6 @@ class RankingFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupLogoutButton(view, R.id.action_rankingFragment_to_loginFragment)
-
-        val apiService = ApiClient.getApiService(requireContext())
-        val rankingRepository = RankingRepository(apiService)
-        val viewModelFactory = RankingViewModelFactory(rankingRepository)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(RankingViewModel::class.java)
 
         setupRecyclerView(view)
         setupSpinner(view)

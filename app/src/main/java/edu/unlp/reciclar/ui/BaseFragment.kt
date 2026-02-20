@@ -4,48 +4,41 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.repository.AuthRepository
-import edu.unlp.reciclar.data.remote.ApiClient
-import edu.unlp.reciclar.data.source.SessionManager
-import kotlinx.coroutines.launch
+import edu.unlp.reciclar.ui.auth.AuthViewModel
 
 abstract class BaseFragment : Fragment() {
 
-    private lateinit var authRepository: AuthRepository
+    protected val authViewModel: AuthViewModel by activityViewModels()
+    private var logoutActionId: Int = R.id.loginFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // La inicialización del repositorio ahora vive aquí, en un solo lugar.
-        val apiService = ApiClient.getApiService(requireContext())
-        val sessionManager = SessionManager(requireContext())
-        authRepository = AuthRepository(apiService, sessionManager)
+        // El botón de logout ahora pide al ViewModel que haga el trabajo
+        view.findViewById<Button>(R.id.btnLogout)?.setOnClickListener {
+            authViewModel.onLogoutClicked()
+        }
+
+        // El observador vive en la clase base, reaccionará en cualquier pantalla
+        observeLogout()
     }
 
-    /**
-     * Configura la lógica del botón de cierre de sesión.
-     * Debe ser llamado desde el onViewCreated de las subclases.
-     * @param view El View del fragmento, necesario para encontrar el botón.
-     * @param navActionId El ID de la acción de navegación a ejecutar al cerrar sesión.
-     */
-    protected fun setupLogoutButton(view: View, @IdRes navActionId: Int) {
-        val btnLogout = view.findViewById<Button>(R.id.btnLogout)
-        btnLogout?.setOnClickListener {
-            lifecycleScope.launch {
-                val result = authRepository.logout()
+    protected fun setupLogoutButton(view: View, actionId: Int) {
+        logoutActionId = actionId
+    }
+
+    private fun observeLogout() {
+        authViewModel.logoutEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { result ->
                 result.onSuccess {
-                    if (isAdded) { // Buena práctica: asegurarse de que el fragmento sigue activo
-                        findNavController().navigate(navActionId)
-                    }
+                    findNavController().navigate(logoutActionId)
+                    Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
                 }.onFailure {
-                    if (isAdded) {
-                        Toast.makeText(context, "Error al cerrar sesión: ${it.message}", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(context, "Error al cerrar sesión: ${it.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

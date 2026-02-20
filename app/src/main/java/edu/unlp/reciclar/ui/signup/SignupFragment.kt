@@ -6,32 +6,23 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
+import dagger.hilt.android.AndroidEntryPoint
 import edu.unlp.reciclar.R
-import edu.unlp.reciclar.data.repository.AuthRepository
-import edu.unlp.reciclar.data.remote.ApiClient
-import edu.unlp.reciclar.data.source.SessionManager
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SignupFragment : Fragment(R.layout.fragment_signup) {
 
-    private lateinit var viewModel: SignupViewModel
+    private val viewModel: SignupViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Inicializar dependencias y ViewModel
-        val context = requireContext()
-        val sessionManager = SessionManager(context)
-        val apiService = ApiClient.getApiService(context)
-        val authRepository = AuthRepository(apiService, sessionManager)
-        val factory = SignupViewModelFactory(authRepository)
-        viewModel = ViewModelProvider(this, factory)[SignupViewModel::class.java]
 
         val etUsername = view.findViewById<TextInputEditText>(R.id.etSignupUsername)
         val etPassword = view.findViewById<TextInputEditText>(R.id.etSignupPassword)

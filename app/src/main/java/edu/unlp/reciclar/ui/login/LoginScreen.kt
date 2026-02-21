@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
+    isLoggedIn: () -> Boolean = { false },
     onLoginSuccess: () -> Unit,
     onGoToSignup: () -> Unit,
     onAlreadyLoggedIn: () -> Unit = {},
@@ -53,7 +54,7 @@ fun LoginScreen(
     // LaunchedEffect(Unit): key = Unit nunca cambia, así que este efecto corre
     // solo una vez cuando el Composable entra en composición.
     LaunchedEffect(Unit) {
-        if (viewModel.isLoggedIn()) onAlreadyLoggedIn()
+        if (isLoggedIn()) onAlreadyLoggedIn()
     }
 
     LaunchedEffect(loginState) {

@@ -15,10 +15,6 @@ class LoginViewModel @Inject constructor(private val repository: AuthRepository)
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
-    fun isLoggedIn(): Boolean {
-        return repository.isLoggedIn()
-    }
-
     fun login(username: String, password: String) = viewModelScope.launch {
         if (username.isBlank() || password.isBlank()) {
             _loginState.value = LoginState.Error("Completa todos los campos")

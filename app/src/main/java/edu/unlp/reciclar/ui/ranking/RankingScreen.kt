@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.domain.model.RankingEntry
-import edu.unlp.reciclar.ui.components.LogoutButton
+import edu.unlp.reciclar.ui.components.AppTopBar
 
 /**
  * Pantalla principal del Ranking implementada íntegramente en Compose.
@@ -43,6 +43,8 @@ import edu.unlp.reciclar.ui.components.LogoutButton
 @Composable
 fun RankingScreen(
     viewModel: RankingViewModel,
+    username: String?,
+    puntosDisponibles: Int?,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -67,11 +69,16 @@ fun RankingScreen(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
+        AppTopBar(
+            username = username,
+            puntosDisponibles = puntosDisponibles,
+            onLogout = onLogout
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ResiduoDropdown(
@@ -79,7 +86,6 @@ fun RankingScreen(
                 selected = selectedType,
                 onSelected = { selectedType = it }
             )
-            LogoutButton(onLogout = onLogout)
         }
 
         // Box permite apilar elementos. Usamos Alignment para centrar el indicador

@@ -1,7 +1,6 @@
 package edu.unlp.reciclar.ui.qrscanner
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.unlp.reciclar.ui.components.LogoutButton
+import edu.unlp.reciclar.ui.components.AppTopBar
 
 /**
  * Pantalla de escaneo QR implementada en Compose.
@@ -46,6 +45,8 @@ import edu.unlp.reciclar.ui.components.LogoutButton
 @Composable
 fun ScanQrScreen(
     viewModel: ScanQrViewModel,
+    username: String?,
+    puntosDisponibles: Int?,
     onStartScan: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
@@ -54,13 +55,12 @@ fun ScanQrScreen(
     val isClaimButtonVisible by viewModel.isClaimButtonVisible.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
 
-        // Botón de logout anclado en la esquina superior derecha —
-        // Alignment.TopEnd dentro del Box, igual que layout_alignParentTop + End del XML.
-        LogoutButton(
-            onLogout = onLogout,
-            modifier = Modifier.align(Alignment.TopEnd)
+        AppTopBar(
+            username = username,
+            puntosDisponibles = puntosDisponibles,
+            onLogout = onLogout
         )
 
         Column(

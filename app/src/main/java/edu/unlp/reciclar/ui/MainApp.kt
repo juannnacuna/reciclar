@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -25,7 +26,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import edu.unlp.reciclar.ui.auth.AuthViewModel
 import edu.unlp.reciclar.ui.login.LoginScreen
 import edu.unlp.reciclar.ui.login.LoginViewModel
 import edu.unlp.reciclar.ui.qrscanner.ScanQrScreen
@@ -50,21 +50,23 @@ private val bottomNavItems = listOf(
 )
 
 /**
- * Composable raíz de la aplicación. Reemplaza activity_main.xml.
+ * Composable raíz de la aplicación.
  *
- * Contiene:
- * - [NavHost]: el equivalente Compose del NavHostFragment + nav_graph.xml.
- *   Cada `composable("ruta") { ... }` es un destino (antes eran Fragments).
- * - [Scaffold] con [NavigationBar]: reemplaza el BottomNavigationView.
- * - Observador de logout: antes vivía en BaseFragment, ahora centralizado aquí.
+ * Conforma la vista base. Contiene:
+ * - NavHost
+ *   Cada `composable("ruta") { ... }` es un destino.
+ * - NavigationBar
+ * - Observador de logout.
  */
 @Composable
 fun MainApp() {
-    // hiltViewModel() en el nivel de MainApp: AuthViewModel dura mientras
+    // hiltViewModel() en el nivel de MainApp: AppViewModel dura mientras
     // MainActivity esté viva — equivalente a activityViewModels() en Fragments.
-    val authViewModel: AuthViewModel = hiltViewModel()
+    val appViewModel: AppViewModel = hiltViewModel()
     val navController = rememberNavController()
     val context = LocalContext.current
+
+    val userState by appViewModel.userState.collectAsStateWithLifecycle()
 
     // currentBackStackEntryAsState(): State<NavBackStackEntry?> que se actualiza
     // en cada navegación. Lo usamos para saber qué destino está activo y así
@@ -78,11 +80,11 @@ fun MainApp() {
 
     // Observador de logout centralizado.
     // LaunchedEffect(Unit): corre indefinidamente mientras MainApp esté en composición,
-    // coleccionando el Flow de eventos de logout del Channel del AuthViewModel.
+    // coleccionando el Flow de eventos de logout del Channel del AppViewModel.
     // Al recibir un evento Success, navega a Login limpiando toda la back stack
     // (popUpTo(0) inclusive = true).
     LaunchedEffect(Unit) {
-        authViewModel.logoutEvent.collect { result ->
+        appViewModel.logoutEvent.collect { result ->
             result.onSuccess {
                 navController.navigate(AppDestination.Login.route) {
                     popUpTo(0) { inclusive = true }
@@ -134,8 +136,7 @@ fun MainApp() {
                 }
             }
         ) { paddingValues ->
-            // NavHost: reemplaza nav_graph.xml.
-            // Cada bloque composable { } es un destino — antes eran Fragments.
+            // Cada bloque composable { } es un destino.
             // hiltViewModel() inyecta ViewModels con Hilt sin necesidad de Fragments.
             NavHost(
                 navController = navController,
@@ -146,8 +147,10 @@ fun MainApp() {
                     val viewModel: LoginViewModel = hiltViewModel()
                     LoginScreen(
                         viewModel = viewModel,
+                        isLoggedIn = { appViewModel.isLoggedIn() },
                         onLoginSuccess = {
                             Toast.makeText(context, "Bienvenido", Toast.LENGTH_LONG).show()
+                            appViewModel.loadUser()
                             navController.navigate(AppDestination.ScanQr.route) {
                                 // Equivalente a app:popUpTo="@id/loginFragment" popUpToInclusive="true"
                                 // del nav_graph.xml — Login no queda en la back stack.
@@ -184,6 +187,8 @@ fun MainApp() {
                     val scanner = GmsBarcodeScanning.getClient(context)
                     ScanQrScreen(
                         viewModel = viewModel,
+                        username = userState?.username,
+                        puntosDisponibles = userState?.puntosDisponibles,
                         onStartScan = {
                             scanner.startScan()
                                 .addOnSuccessListener { barcode ->
@@ -201,7 +206,7 @@ fun MainApp() {
                                     viewModel.onScanError("Error al iniciar escáner: ${e.message}")
                                 }
                         },
-                        onLogout = { authViewModel.onLogoutClicked() }
+                        onLogout = { appViewModel.onLogoutClicked() }
                     )
                 }
 
@@ -209,7 +214,9 @@ fun MainApp() {
                     val viewModel: RankingViewModel = hiltViewModel()
                     RankingScreen(
                         viewModel = viewModel,
-                        onLogout = { authViewModel.onLogoutClicked() }
+                        username = userState?.username,
+                        puntosDisponibles = userState?.puntosDisponibles,
+                        onLogout = { appViewModel.onLogoutClicked() }
                     )
                 }
             }

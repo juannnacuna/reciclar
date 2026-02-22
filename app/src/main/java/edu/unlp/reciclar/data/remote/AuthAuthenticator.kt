@@ -15,7 +15,7 @@ class AuthAuthenticator(
 
     override fun authenticate(route: Route?, response: Response): Request? {
 
-        Log.d(TAG, "Intentando refreshear el token ${response.request().url()} ${tokenManager.getRefreshToken()} ${tokenManager.getAccessToken()}")
+        Log.d(TAG, "Intentando refreshear el token ${response.request.url} ${tokenManager.getRefreshToken()} ${tokenManager.getAccessToken()}")
 
         val refreshToken = tokenManager.getRefreshToken() ?: return null
 
@@ -29,7 +29,7 @@ class AuthAuthenticator(
                 tokenManager.saveAccessToken(newAccessToken)
 
                 // Recreo la request, con el access token actualizado
-                response.request().newBuilder()
+                response.request.newBuilder()
                     .header("Authorization", "Bearer $newAccessToken")
                     .build()
             } else {

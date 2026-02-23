@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.ui.components.AppTopBar
+import edu.unlp.reciclar.ui.utils.ReporteModal
 
 /**
  * Pantalla de escaneo QR implementada en Compose.
@@ -38,9 +39,8 @@ import edu.unlp.reciclar.ui.components.AppTopBar
  *   "inversión de control" y es la forma idiomática de integrar APIs
  *   imperativas de Android con Compose.
  *
- * [onClaimPoints]: lambda que llama a viewModel.reclamarPuntos().
- *   También se podría llamar directamente desde el Screen, pero separarlo
- *   mantiene la pantalla desacoplada del ViewModel si fuera necesario testearla.
+ * El Screen permite que el usuario escanee QR, reclame puntos, o reporte residuos
+ * a través de un modal dedicado.
  */
 @Composable
 fun ScanQrScreen(
@@ -53,7 +53,10 @@ fun ScanQrScreen(
 ) {
     val statusMessage by viewModel.statusMessage.collectAsStateWithLifecycle()
     val isClaimButtonVisible by viewModel.isClaimButtonVisible.collectAsStateWithLifecycle()
+    val isReportButtonVisible by viewModel.isReportButtonVisible.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val showReporteModal by viewModel.showReporteModal.collectAsStateWithLifecycle()
+    val tipoSugerido by viewModel.tipoSugerido.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
 
@@ -137,6 +140,27 @@ fun ScanQrScreen(
                     Text("Reclamar Puntos")
                 }
             }
+
+            if (isReportButtonVisible) {
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedButton(
+                    onClick = { viewModel.reportarResiduo() },
+                    enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Reportar Residuo")
+                }
+            }
         }
     }
+
+    // Modal para reportar residuo
+    ReporteModal(
+        showDialog = showReporteModal,
+        onDismiss = { viewModel.cerrarReporteModal() },
+        onSubmit = { tipo -> viewModel.enviarReporte(tipo) },
+        tipoSugerido = tipoSugerido,
+        onTipoSugridoChange = { viewModel.actualizarTipoSugerido(it) },
+        isLoading = isLoading
+    )
 }

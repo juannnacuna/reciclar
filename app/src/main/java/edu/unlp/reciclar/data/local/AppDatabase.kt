@@ -8,20 +8,23 @@ import edu.unlp.reciclar.data.local.dao.CanjeDao
 import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.dao.LogroDao
 import edu.unlp.reciclar.data.local.dao.ReporteDao
+import edu.unlp.reciclar.data.local.dao.ResiduoDao
 import edu.unlp.reciclar.data.local.dao.UsuarioDao
 import edu.unlp.reciclar.data.local.entity.Canje
 import edu.unlp.reciclar.data.local.entity.Cupon
 import edu.unlp.reciclar.data.local.entity.Logro
 import edu.unlp.reciclar.data.local.entity.Reporte
+import edu.unlp.reciclar.data.local.entity.Residuo
 import edu.unlp.reciclar.data.local.entity.Usuario
 
-@Database(entities = [Canje::class, Cupon::class, Logro::class, Reporte::class, Usuario::class], version = 1, exportSchema = false)
+@Database(entities = [Canje::class, Cupon::class, Logro::class, Residuo::class, Reporte::class, Usuario::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun canjeDao(): CanjeDao
     abstract fun cuponDao(): CuponDao
     abstract fun logroDao(): LogroDao
     abstract fun reporteDao(): ReporteDao
+    abstract fun residuoDao(): ResiduoDao
     abstract fun usuarioDao(): UsuarioDao
 
     companion object {

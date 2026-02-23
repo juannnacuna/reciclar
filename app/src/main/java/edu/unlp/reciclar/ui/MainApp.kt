@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Functions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -34,6 +35,7 @@ import edu.unlp.reciclar.ui.ranking.RankingScreen
 import edu.unlp.reciclar.ui.ranking.RankingViewModel
 import edu.unlp.reciclar.ui.signup.SignupScreen
 import edu.unlp.reciclar.ui.signup.SignupViewModel
+import edu.unlp.reciclar.ui.estadistica.EstadisticaScreen
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -46,7 +48,8 @@ private data class BottomNavItem(
 
 private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.ScanQr, Icons.Default.QrCodeScanner, "Scan QR"),
-    BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking")
+    BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking"),
+    BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, "Estadística")
 )
 
 /**
@@ -209,6 +212,12 @@ fun MainApp() {
                     val viewModel: RankingViewModel = hiltViewModel()
                     RankingScreen(
                         viewModel = viewModel,
+                        onLogout = { authViewModel.onLogoutClicked() }
+                    )
+                }
+
+                composable(AppDestination.Estadistica.route) {
+                    EstadisticaScreen(
                         onLogout = { authViewModel.onLogoutClicked() }
                     )
                 }

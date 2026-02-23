@@ -12,12 +12,14 @@ import edu.unlp.reciclar.data.local.dao.CanjeDao
 import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.dao.LogroDao
 import edu.unlp.reciclar.data.local.dao.ReporteDao
+import edu.unlp.reciclar.data.local.dao.ResiduoDao
 import edu.unlp.reciclar.data.local.dao.UsuarioDao
 import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.data.remote.AuthAuthenticator
 import edu.unlp.reciclar.data.remote.AuthInterceptor
 import edu.unlp.reciclar.data.repository.AuthRepository
 import edu.unlp.reciclar.data.repository.RankingRepository
+import edu.unlp.reciclar.data.repository.ReportesRepository
 import edu.unlp.reciclar.data.repository.ResiduosRepository
 import edu.unlp.reciclar.data.repository.UserRepository
 import edu.unlp.reciclar.data.source.SessionManager
@@ -108,6 +110,9 @@ object AppModule {
     @Provides
     fun provideReporteDao(database: AppDatabase): ReporteDao = database.reporteDao()
 
+    @Provides
+    fun provideResiduoDao(database: AppDatabase): ResiduoDao = database.residuoDao()
+
     // ── Repositories ─────────────────────────────────────────
 
     @Provides
@@ -134,7 +139,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideResiduosRepository(apiService: ApiService, userRepository: UserRepository): ResiduosRepository {
-        return ResiduosRepository(apiService, userRepository)
+    fun provideResiduosRepository(apiService: ApiService, userRepository: UserRepository, residuosDao: ResiduoDao): ResiduosRepository {
+        return ResiduosRepository(apiService, userRepository, residuosDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReportesRepository(userRepository: UserRepository, reporteDao: ReporteDao): ReportesRepository {
+        return ReportesRepository(userRepository, reporteDao)
     }
 }

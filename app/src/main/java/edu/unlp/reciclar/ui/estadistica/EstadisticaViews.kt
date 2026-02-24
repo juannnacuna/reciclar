@@ -37,9 +37,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// ── Claves del mapa de vistas (usadas también en el selector) ─────────────────
-internal val estadisticaViewKeys = listOf("Puntos Acumulados", "Tipos de Residuos", "Reciclajes", "Canjes")
-
 // ── Gráfico de barras horizontal compartido ───────────────────────────────────
 
 @Composable

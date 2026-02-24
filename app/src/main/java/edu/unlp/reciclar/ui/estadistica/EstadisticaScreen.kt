@@ -25,8 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.ui.components.AppTopBar
 
-private val estadisticaViewNames: List<String> = estadisticaViewKeys.sorted()
-
 /**
  * Pantalla principal de Estadística.
  *
@@ -86,6 +84,8 @@ fun EstadisticaScreen(
         }
     )
 
+    val estadisticaViewNames: List<String> = viewsMap.keys.sorted()
+
     var selectedViewName by remember { mutableStateOf(estadisticaViewNames.firstOrNull() ?: "") }
 
     Column(
@@ -104,7 +104,8 @@ fun EstadisticaScreen(
         ) {
             EstadisticaViewSelector(
                 selected = selectedViewName,
-                onSelected = { selectedViewName = it }
+                onSelected = { selectedViewName = it },
+                estadisticaViewNames = estadisticaViewNames
             )
         }
 
@@ -124,7 +125,8 @@ fun EstadisticaScreen(
 @Composable
 private fun EstadisticaViewSelector(
     selected: String,
-    onSelected: (String) -> Unit
+    onSelected: (String) -> Unit,
+    estadisticaViewNames: List<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
 

@@ -1,6 +1,5 @@
 package edu.unlp.reciclar.ui
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -36,7 +35,9 @@ import edu.unlp.reciclar.ui.ranking.RankingScreen
 import edu.unlp.reciclar.ui.ranking.RankingViewModel
 import edu.unlp.reciclar.ui.signup.SignupScreen
 import edu.unlp.reciclar.ui.signup.SignupViewModel
-import edu.unlp.reciclar.ui.maps.RecyclingMapActivity
+import edu.unlp.reciclar.ui.maps.RecyclingMapScreen
+import edu.unlp.reciclar.ui.maps.RecyclingMapViewModel
+import edu.unlp.reciclar.ui.components.AppTopBar
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -78,7 +79,7 @@ fun MainApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val showBottomBar = bottomNavItems.any { item ->
+    val showBars = bottomNavItems.any { item ->
         currentDestination?.hierarchy?.any { it.route == item.destination.route } == true
     }
 
@@ -102,8 +103,20 @@ fun MainApp() {
 
     MaterialTheme {
         Scaffold(
+            topBar = {
+                // AppTopBar se muestra solo en pantallas autenticadas (las mismas
+                // que tienen bottomBar). Al estar en el Scaffold, se renderiza en
+                // su propia capa — nunca se superpone ni compite con el contenido.
+                if (showBars) {
+                    AppTopBar(
+                        username = userState?.username,
+                        puntosDisponibles = userState?.puntosDisponibles,
+                        onLogout = { appViewModel.onLogoutClicked() }
+                    )
+                }
+            },
             bottomBar = {
-                if (showBottomBar) {
+                if (showBars) {
                     NavigationBar {
                         bottomNavItems.forEach { item ->
                             val selected = currentDestination?.hierarchy
@@ -112,18 +125,12 @@ fun MainApp() {
                             NavigationBarItem(
                                 selected = selected,
                                 onClick = {
-                                    // Si el item es el mapa, lanzamos la Activity nativa
-                                    if (item.destination == AppDestination.Map) {
-                                        val intent = Intent(context, RecyclingMapActivity::class.java)
-                                        context.startActivity(intent)
-                                    } else {
-                                        navController.navigate(item.destination.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
+                                    navController.navigate(item.destination.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
                                         }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
                                 },
                                 icon = {
@@ -190,8 +197,6 @@ fun MainApp() {
                     val scanner = GmsBarcodeScanning.getClient(context)
                     ScanQrScreen(
                         viewModel = viewModel,
-                        username = userState?.username,
-                        puntosDisponibles = userState?.puntosDisponibles,
                         onStartScan = {
                             scanner.startScan()
                                 .addOnSuccessListener { barcode ->
@@ -208,18 +213,21 @@ fun MainApp() {
                                 .addOnFailureListener { e ->
                                     viewModel.onScanError("Error al iniciar escáner: ${e.message}")
                                 }
-                        },
-                        onLogout = { appViewModel.onLogoutClicked() }
+                        }
                     )
                 }
 
                 composable(AppDestination.Ranking.route) {
                     val viewModel: RankingViewModel = hiltViewModel()
                     RankingScreen(
-                        viewModel = viewModel,
-                        username = userState?.username,
-                        puntosDisponibles = userState?.puntosDisponibles,
-                        onLogout = { appViewModel.onLogoutClicked() }
+                        viewModel = viewModel
+                    )
+                }
+
+                composable(AppDestination.Map.route) {
+                    val viewModel: RecyclingMapViewModel = hiltViewModel()
+                    RecyclingMapScreen(
+                        viewModel = viewModel
                     )
                 }
             }

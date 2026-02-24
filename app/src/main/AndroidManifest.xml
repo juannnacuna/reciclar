@@ -28,9 +28,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.maps.RecyclingMapActivity"
-            android:screenOrientation="portrait" />
 
         <!-- Meta-data necesario para que ML Kit descargue el modelo de scanner automáticamente -->
         <meta-data

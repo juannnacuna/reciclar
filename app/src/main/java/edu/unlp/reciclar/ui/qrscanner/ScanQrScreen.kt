@@ -27,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.unlp.reciclar.ui.components.AppTopBar
 
 /**
  * Pantalla de escaneo QR implementada en Compose.
@@ -46,10 +45,7 @@ import edu.unlp.reciclar.ui.components.AppTopBar
 @Composable
 fun ScanQrScreen(
     viewModel: ScanQrViewModel,
-    username: String?,
-    puntosDisponibles: Int?,
     onStartScan: () -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val statusMessage by viewModel.statusMessage.collectAsStateWithLifecycle()
@@ -59,11 +55,6 @@ fun ScanQrScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
 
-        AppTopBar(
-            username = username,
-            puntosDisponibles = puntosDisponibles,
-            onLogout = onLogout
-        )
 
         Column(
             modifier = Modifier

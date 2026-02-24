@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.remote.model.maps.RecyclingPoint
 import edu.unlp.reciclar.data.remote.model.maps.RouteInfo
+import edu.unlp.reciclar.data.remote.model.maps.TransportMode
 import edu.unlp.reciclar.data.remote.dto.Estacion
 import edu.unlp.reciclar.data.repository.EstacionesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,10 @@ class RecyclingMapViewModel @Inject constructor(
     // Ubicación actual del usuario (punto de origen)
     private val _originPoint = MutableStateFlow<GeoPoint?>(null)
     val originPoint: StateFlow<GeoPoint?> = _originPoint
+
+    // Modo de transporte actual
+    private val _transportMode = MutableStateFlow(TransportMode.WALKING)
+    val transportMode: StateFlow<TransportMode> = _transportMode
 
     init {
         loadEstaciones()
@@ -74,5 +79,10 @@ class RecyclingMapViewModel @Inject constructor(
     // Limpiar información de ruta
     fun clearRouteInfo() {
         _routeInfo.value = null
+    }
+
+    // Cambiar modo de transporte
+    fun setTransportMode(mode: TransportMode) {
+        _transportMode.value = mode
     }
 }

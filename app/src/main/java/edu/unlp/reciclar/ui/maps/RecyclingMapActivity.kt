@@ -2,6 +2,10 @@
 package edu.unlp.reciclar.ui.maps
 
 import android.Manifest
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -17,6 +21,7 @@ import edu.unlp.reciclar.R
 import dagger.hilt.android.AndroidEntryPoint
 import edu.unlp.reciclar.data.remote.model.maps.RecyclingPoint
 import edu.unlp.reciclar.data.remote.model.maps.RouteInfo
+import edu.unlp.reciclar.data.remote.model.maps.TransportMode
 import edu.unlp.reciclar.ui.utils.LocationPermissionHelper
 import java.util.Locale
 import kotlinx.coroutines.launch
@@ -38,6 +43,9 @@ class RecyclingMapActivity : AppCompatActivity() {
     private lateinit var routeInfoContainer: android.view.View
     private lateinit var tvRouteInfo: TextView
     private lateinit var permissionHelper: LocationPermissionHelper
+    private lateinit var transportModeContainer: android.view.View
+    private lateinit var btnWalking: Button
+    private lateinit var btnDriving: Button
 
     private val viewModel: RecyclingMapViewModel by viewModels()
     private val dataLoader by lazy { RecyclingMapDataLoader(this) }
@@ -51,11 +59,15 @@ class RecyclingMapActivity : AppCompatActivity() {
 
         routeInfoContainer = findViewById(R.id.routeInfoContainer)
         tvRouteInfo = findViewById(R.id.tvRouteInfo)
+        transportModeContainer = findViewById(R.id.transportModeContainer)
+        btnWalking = findViewById(R.id.btnWalking)
+        btnDriving = findViewById(R.id.btnDriving)
 
         findViewById<Button?>(R.id.btnBack)?.setOnClickListener { finish() }
 
         setupMap()
         setupPermissionHelper()
+        setupTransportModeButtons()
         observeViewModel()
 
         // Cargar estaciones desde API
@@ -75,6 +87,13 @@ class RecyclingMapActivity : AppCompatActivity() {
         }
 
         myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), mapView)
+
+        // Ícono de ubicación
+        val locationIcon = createLocationBitmap()
+        myLocationOverlay.setPersonIcon(locationIcon)
+        myLocationOverlay.setDirectionIcon(locationIcon)
+        myLocationOverlay.setPersonHotspot(locationIcon.width / 2f, locationIcon.height / 2f)
+
         myLocationOverlay.enableMyLocation()
         // NO usar enableFollowLocation() → evita que el mapa se recentre en la ubicación GPS del emulador
         mapView.overlays.add(myLocationOverlay)
@@ -102,6 +121,55 @@ class RecyclingMapActivity : AppCompatActivity() {
             onPermissionGranted = { enableUserLocation() },
             onPermissionDenied = { Toast.makeText(this, "Activá la ubicación para calcular rutas", Toast.LENGTH_SHORT).show() }
         )
+    }
+
+    private fun setupTransportModeButtons() {
+        updateTransportButtons(viewModel.transportMode.value)
+
+        btnWalking.setOnClickListener {
+            viewModel.setTransportMode(TransportMode.WALKING)
+            updateTransportButtons(TransportMode.WALKING)
+            redrawCurrentRoute()
+        }
+
+        btnDriving.setOnClickListener {
+            viewModel.setTransportMode(TransportMode.DRIVING)
+            updateTransportButtons(TransportMode.DRIVING)
+            redrawCurrentRoute()
+        }
+    }
+
+    private fun updateTransportButtons(mode: TransportMode) {
+        btnWalking.alpha = if (mode == TransportMode.WALKING) 1f else 0.5f
+        btnDriving.alpha = if (mode == TransportMode.DRIVING) 1f else 0.5f
+    }
+
+    private fun redrawCurrentRoute() {
+        val selected = viewModel.selectedPoint.value ?: return
+        val origin = viewModel.originPoint.value ?: return
+
+        // Limpiar rutas previas
+        mapView.overlays.removeAll { it is Polyline }
+        viewModel.clearRouteInfo()
+        mapView.invalidate()
+
+        drawRouteToSelected(origin, selected)
+    }
+
+    private fun drawRouteToSelected(origin: GeoPoint, point: RecyclingPoint) {
+        val mode = viewModel.transportMode.value
+        when (mode) {
+            TransportMode.WALKING -> {
+                dataLoader.drawWalkingRoute(mapView, origin, point.toGeoPoint()) { routeInfo ->
+                    viewModel.setRouteInfo(routeInfo)
+                }
+            }
+            TransportMode.DRIVING -> {
+                dataLoader.drawDrivingRoute(mapView, origin, point.toGeoPoint()) { routeInfo ->
+                    viewModel.setRouteInfo(routeInfo)
+                }
+            }
+        }
     }
 
     private fun enableUserLocation() {
@@ -171,14 +239,13 @@ class RecyclingMapActivity : AppCompatActivity() {
 
             // Limpiar rutas previas
             mapView.overlays.removeAll { it is Polyline }
+            viewModel.clearRouteInfo()
             mapView.invalidate()
 
             // Dibujar ruta si tenemos ubicación del usuario
             val origin = viewModel.originPoint.value
             if (origin != null) {
-                dataLoader.drawWalkingRoute(mapView, origin, selected.toGeoPoint()) { routeInfo ->
-                    viewModel.setRouteInfo(routeInfo)
-                }
+                drawRouteToSelected(origin, selected)
             } else {
                 Toast.makeText(this@RecyclingMapActivity, "Esperando ubicación para calcular ruta...", Toast.LENGTH_SHORT).show()
             }
@@ -211,7 +278,12 @@ class RecyclingMapActivity : AppCompatActivity() {
             "${minutes} min"
         }
 
-        tvRouteInfo.text = "🚶 A pie · $distance · ⏱ $time"
+        val modeLabel = when (routeInfo.mode) {
+            TransportMode.WALKING -> "🚶 A pie"
+            TransportMode.DRIVING -> "🚗 En auto"
+        }
+
+        tvRouteInfo.text = "$modeLabel · $distance · ⏱ $time"
 
         if (!routeInfoContainer.isVisible) {
             routeInfoContainer.visibility = android.view.View.VISIBLE
@@ -230,5 +302,34 @@ class RecyclingMapActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+    }
+
+    private fun createLocationBitmap(): Bitmap {
+        val size = 48
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Borde blanco
+        val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            style = Paint.Style.FILL
+        }
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, borderPaint)
+
+        // Círculo verde interior
+        val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#4CAF50") // Verde Material
+            style = Paint.Style.FILL
+        }
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f - 4f, fillPaint)
+
+        // Punto blanco central
+        val centerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            style = Paint.Style.FILL
+        }
+        canvas.drawCircle(size / 2f, size / 2f, 6f, centerPaint)
+
+        return bitmap
     }
 }

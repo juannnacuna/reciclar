@@ -1,10 +1,12 @@
 package edu.unlp.reciclar.ui
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -34,6 +36,7 @@ import edu.unlp.reciclar.ui.ranking.RankingScreen
 import edu.unlp.reciclar.ui.ranking.RankingViewModel
 import edu.unlp.reciclar.ui.signup.SignupScreen
 import edu.unlp.reciclar.ui.signup.SignupViewModel
+import edu.unlp.reciclar.ui.maps.RecyclingMapActivity
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -46,7 +49,8 @@ private data class BottomNavItem(
 
 private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.ScanQr, Icons.Default.QrCodeScanner, "Scan QR"),
-    BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking")
+    BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking"),
+    BottomNavItem(AppDestination.Map, Icons.Default.Place, "Mapa")
 )
 
 /**
@@ -108,19 +112,18 @@ fun MainApp() {
                             NavigationBarItem(
                                 selected = selected,
                                 onClick = {
-                                    // Patrón estándar para bottom nav en Compose:
-                                    // - popUpTo(startDestination) limpia la pila hasta la
-                                    //   raíz del grafo al cambiar pestaña.
-                                    // - saveState/restoreState preserva el estado de scroll
-                                    //   y datos de cada pestaña al volver a ella.
-                                    // - launchSingleTop evita duplicar el destino si ya
-                                    //   estás en esa pestaña.
-                                    navController.navigate(item.destination.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
+                                    // Si el item es el mapa, lanzamos la Activity nativa
+                                    if (item.destination == AppDestination.Map) {
+                                        val intent = Intent(context, RecyclingMapActivity::class.java)
+                                        context.startActivity(intent)
+                                    } else {
+                                        navController.navigate(item.destination.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
                                     }
                                 },
                                 icon = {

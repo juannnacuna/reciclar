@@ -7,38 +7,53 @@ import edu.unlp.reciclar.data.source.SessionManager
 
 private const val TAG = "AuthAuthenticatorDebug"
 class AuthAuthenticator(
-    private val tokenManager: SessionManager, // Tu clase que guarda tokens
-    // OJO: No uses el mismo ApiService general aquí para evitar dependencias circulares.
-    // Lo ideal es tener un servicio separado o inyectarlo de forma Lazy.
+    private val tokenManager: SessionManager,
     private val apiServiceProvider: () -> ApiService
 ) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
 
-        Log.d(TAG, "Intentando refreshear el token ${response.request.url} ${tokenManager.getRefreshToken()} ${tokenManager.getAccessToken()}")
+        // Evitar loop infinito: contar reintentos previos
+        if (responseCount(response) >= 2) {
+            Log.d(TAG, "Demasiados reintentos de refresh, abortando")
+            return null
+        }
+
+        Log.d(TAG, "Intentando refreshear el token (intento ${responseCount(response) + 1})")
 
         val refreshToken = tokenManager.getRefreshToken() ?: return null
 
         return try {
             val refreshResponse = apiServiceProvider().refreshToken(RefreshTokenRequest(refreshToken)).execute()
 
-            Log.d(TAG, "Se obtuvo el nuevo token: ${refreshResponse.code()} ${refreshResponse.body()}")
+            Log.d(TAG, "Refresh response: ${refreshResponse.code()}")
 
             if (refreshResponse.isSuccessful) {
                 val newAccessToken = refreshResponse.body()!!.accessToken
                 tokenManager.saveAccessToken(newAccessToken)
 
-                // Recreo la request, con el access token actualizado
                 response.request.newBuilder()
                     .header("Authorization", "Bearer $newAccessToken")
                     .build()
             } else {
-                Log.d(TAG, "Refresh fallido: ${refreshResponse.code()} ${refreshResponse.errorBody()?.string()}")
+                Log.d(TAG, "Refresh fallido: ${refreshResponse.code()}")
+                // Si el refresh falla, limpiar tokens para no reintentar
+                tokenManager.clearTokens()
                 null
             }
         } catch (e: Exception) {
             Log.d(TAG, "Error al refrescar el token: ${e.message}")
             null
         }
+    }
+
+    private fun responseCount(response: Response): Int {
+        var result = 1
+        var priorResp = response.priorResponse
+        while (priorResp != null) {
+            result++
+            priorResp = priorResp.priorResponse
+        }
+        return result
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,7 +39,7 @@ import edu.unlp.reciclar.ui.components.AppTopBar
  *   "inversión de control" y es la forma idiomática de integrar APIs
  *   imperativas de Android con Compose.
  *
- * [onClaimPoints]: lambda que llama a viewModel.reclamarPuntos().
+ * onClaimPoints: lambda que llama a viewModel.reclamarPuntos().
  *   También se podría llamar directamente desde el Screen, pero separarlo
  *   mantiene la pantalla desacoplada del ViewModel si fuera necesario testearla.
  */
@@ -54,6 +55,7 @@ fun ScanQrScreen(
     val statusMessage by viewModel.statusMessage.collectAsStateWithLifecycle()
     val isClaimButtonVisible by viewModel.isClaimButtonVisible.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val ctx = LocalContext.current
 
     Column(modifier = modifier.fillMaxSize()) {
 

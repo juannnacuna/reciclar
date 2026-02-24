@@ -17,6 +17,7 @@ import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.data.remote.AuthAuthenticator
 import edu.unlp.reciclar.data.remote.AuthInterceptor
 import edu.unlp.reciclar.data.repository.AuthRepository
+import edu.unlp.reciclar.data.repository.EstacionesRepository
 import edu.unlp.reciclar.data.repository.RankingRepository
 import edu.unlp.reciclar.data.repository.ResiduosRepository
 import edu.unlp.reciclar.data.repository.UserRepository
@@ -136,5 +137,11 @@ object AppModule {
     @Singleton
     fun provideResiduosRepository(apiService: ApiService, userRepository: UserRepository): ResiduosRepository {
         return ResiduosRepository(apiService, userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEstacionesRepository(apiService: ApiService): EstacionesRepository {
+        return EstacionesRepository(apiService)
     }
 }

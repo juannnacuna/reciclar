@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import edu.unlp.reciclar.data.local.AppDatabase
+import edu.unlp.reciclar.data.local.DatabaseSeeder
 import edu.unlp.reciclar.data.local.dao.CanjeDao
 import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.dao.LogroDao
@@ -92,7 +93,9 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "app_database"
-        ).build()
+        )
+            .addCallback(DatabaseSeeder.callback)
+            .build()
     }
 
     @Provides

@@ -68,19 +68,20 @@ fun AppTopBar(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Usuario activo")
 @Composable
 private fun AppTopBarPreview() {
     MaterialTheme {
         AppTopBar(
-            username = "juanito",
-            puntosDisponibles = 120,
+            // Usuario de prueba del seeder — DatabaseSeeder.TEST_USERNAME
+            username = "reciclador_pro",
+            puntosDisponibles = 320,
             onLogout = {}
         )
     }
 }
 
-@Preview(showBackground = true, name = "Loading state")
+@Preview(showBackground = true, name = "Cargando usuario")
 @Composable
 private fun AppTopBarLoadingPreview() {
     MaterialTheme {

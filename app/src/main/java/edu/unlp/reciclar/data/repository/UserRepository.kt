@@ -18,11 +18,11 @@ class UserRepository(
     suspend fun getUser(): Result<Usuario> {
         return withContext(Dispatchers.IO) {
 
-            // 1. Si ya tenemos el ID cacheado, buscamos en Room y devolvemos eso
+            // 1. Si ya tenemos el ID cacheado, consultamos la vista con puntos calculados
             cachedUserRemoteId?.let { id ->
-                val usuarioEntidad = usuarioDao.getUsuarioById(id.toString())
-                if (usuarioEntidad != null) {
-                    return@withContext Result.success(usuarioEntidad.toDomain())
+                val usuarioConPuntos = usuarioDao.getUsuarioConPuntosById(id.toString())
+                if (usuarioConPuntos != null) {
+                    return@withContext Result.success(usuarioConPuntos.toDomain())
                 }
             }
 
@@ -59,19 +59,6 @@ class UserRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    suspend fun agregarPuntos(puntosNuevos: Int): Result<Unit> {
-        return withContext(Dispatchers.IO) {
-            val id = cachedUserRemoteId ?: return@withContext Result.failure(Exception("No hay usuario logueado"))
-
-            try {
-                usuarioDao.agregarPuntos(id = id, puntosASumar = puntosNuevos)
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
         }
     }
 }

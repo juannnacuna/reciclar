@@ -41,8 +41,8 @@ class ResiduosRepository(
             )
             residuosDao.insertReciclaje(residuo)
 
-            // Agregar puntos al usuario
-            usuarioRepository.agregarPuntos(qrData.puntos)
+            // Los puntos se calculan automáticamente desde la vista usuarios_con_puntos
+            // no es necesario actualizarlos manualmente en la entidad Usuario.
 
             return Result.success(
                 ResultadoReclamo(

@@ -225,7 +225,9 @@ fun MainApp() {
 
                 composable(AppDestination.Estadistica.route) {
                     EstadisticaScreen(
-                        onLogout = { authViewModel.onLogoutClicked() }
+                        username = userState?.username,
+                        puntosDisponibles = userState?.puntosDisponibles,
+                        onLogout = { appViewModel.onLogoutClicked() }
                     )
                 }
             }

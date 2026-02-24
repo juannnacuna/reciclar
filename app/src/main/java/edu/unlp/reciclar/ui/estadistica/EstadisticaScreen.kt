@@ -1,6 +1,5 @@
 package edu.unlp.reciclar.ui.estadistica
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import edu.unlp.reciclar.ui.components.LogoutButton
+import edu.unlp.reciclar.ui.components.AppTopBar
 
 /**
  * Lista de vistas de estadística ordenadas alfabéticamente.
@@ -41,6 +40,8 @@ private val estadisticaViewNames: List<String> by lazy {
 @Composable
 fun EstadisticaScreen(
     modifier: Modifier = Modifier,
+    username: String? = null,
+    puntosDisponibles: Int? = null,
     onLogout: () -> Unit = {}
 ) {
     var selectedViewName by remember { mutableStateOf(estadisticaViewNames.firstOrNull() ?: "") }
@@ -48,18 +49,21 @@ fun EstadisticaScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
+        AppTopBar(
+            username = username,
+            puntosDisponibles = puntosDisponibles,
+            onLogout = onLogout
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             EstadisticaViewSelector(
                 selected = selectedViewName,
                 onSelected = { selectedViewName = it }
             )
-            LogoutButton(onLogout = onLogout)
         }
 
         Box(modifier = Modifier.fillMaxSize()) {

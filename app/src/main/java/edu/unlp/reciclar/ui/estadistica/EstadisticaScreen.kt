@@ -30,8 +30,7 @@ import edu.unlp.reciclar.ui.components.AppTopBar
  *
  * Para agregar una nueva vista:
  * 1. Crea la función Composable en EstadisticaViews.kt
- * 2. Añade la clave en [estadisticaViewKeys]
- * 3. Agrégala al mapa viewsMap de esta función
+ * 2. Agrégala al mapa viewsMap de esta función
  */
 @Composable
 fun EstadisticaScreen(

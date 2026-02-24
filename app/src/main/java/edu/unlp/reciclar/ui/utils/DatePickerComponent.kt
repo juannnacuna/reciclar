@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
  * @param onDismiss Callback cuando se cierra el diálogo
  * @param onDateSelected Callback cuando se confirma una fecha (recibe milisegundos)
  * @param initialDateMillis Fecha inicial del picker (en milisegundos)
+ * @param minDateMillis Fecha mínima seleccionable (en milisegundos)
+ * @param maxDateMillis Fecha máxima seleccionable (en milisegundos)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,10 +26,22 @@ fun DatePickerComponent(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onDateSelected: (Long) -> Unit,
-    initialDateMillis: Long
+    initialDateMillis: Long,
+    minDateMillis: Long? = null,
+    maxDateMillis: Long? = null
 ) {
     if (showDialog) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
+
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = initialDateMillis,
+            selectableDates = object : androidx.compose.material3.SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return (minDateMillis == null || utcTimeMillis >= minDateMillis) &&
+                            (maxDateMillis == null || utcTimeMillis <= maxDateMillis)
+                }
+            }
+        )
+
         DatePickerDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
@@ -50,4 +64,3 @@ fun DatePickerComponent(
         }
     }
 }
-

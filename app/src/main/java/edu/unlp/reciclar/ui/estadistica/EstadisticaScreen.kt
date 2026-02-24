@@ -43,24 +43,45 @@ fun EstadisticaScreen(
     onLogout: () -> Unit = {},
     viewModel: EstadisticaViewModel = hiltViewModel()
 ) {
-    val tiposStats    by viewModel.tiposStats.collectAsStateWithLifecycle()
-    val tiposStart    by viewModel.tiposStart.collectAsStateWithLifecycle()
-    val tiposEnd      by viewModel.tiposEnd.collectAsStateWithLifecycle()
-    val semanalStats  by viewModel.semanalStats.collectAsStateWithLifecycle()
-    val mensualStats  by viewModel.mensualStats.collectAsStateWithLifecycle()
-    val anualStats    by viewModel.anualStats.collectAsStateWithLifecycle()
+    val tiposStats by viewModel.tiposStats.collectAsStateWithLifecycle()
+    val reciclajesHistorial by viewModel.reciclajesHistorial.collectAsStateWithLifecycle()
+    val canjesHistorial by viewModel.canjesHistorial.collectAsStateWithLifecycle()
+    val puntosStats by viewModel.puntosStats.collectAsStateWithLifecycle()
+    val startDate by viewModel.startDate.collectAsStateWithLifecycle()
+    val endDate by viewModel.endDate.collectAsStateWithLifecycle()
 
     // Mapa local para poder capturar el estado del ViewModel en cada composable
     val viewsMap: Map<String, @Composable () -> Unit> = mapOf(
-        "Anual"            to { AnualEstadisticaView(stats = anualStats) },
-        "Mensual"          to { MensualEstadisticaView(stats = mensualStats) },
-        "Semanal"          to { SemanalEstadisticaView(stats = semanalStats) },
+        "Puntos Acumulados" to {
+            PuntosAcumuladosView(
+                puntosStats = puntosStats,
+                startDateMillis = startDate,
+                endDateMillis = endDate,
+                onDateRangeChanged = { s, e -> viewModel.updateDateRange(s, e) }
+            )
+        },
         "Tipos de Residuos" to {
             TiposResiduosView(
-                stats              = tiposStats,
-                startDateMillis    = tiposStart,
-                endDateMillis      = tiposEnd,
-                onDateRangeChanged = { s, e -> viewModel.updateTiposDateRange(s, e) }
+                stats = tiposStats,
+                startDateMillis = startDate,
+                endDateMillis = endDate,
+                onDateRangeChanged = { s, e -> viewModel.updateDateRange(s, e) }
+            )
+        },
+        "Reciclajes" to {
+            ReciclajesHistorialView(
+                residuos = reciclajesHistorial,
+                startDateMillis = startDate,
+                endDateMillis = endDate,
+                onDateRangeChanged = { s, e -> viewModel.updateDateRange(s, e) }
+            )
+        },
+        "Canjes" to {
+            CanjesHistorialView(
+                canjes = canjesHistorial,
+                startDateMillis = startDate,
+                endDateMillis = endDate,
+                onDateRangeChanged = { s, e -> viewModel.updateDateRange(s, e) }
             )
         }
     )

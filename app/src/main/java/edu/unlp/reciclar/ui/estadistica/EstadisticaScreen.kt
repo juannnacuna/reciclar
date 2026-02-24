@@ -21,29 +21,50 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.ui.components.AppTopBar
 
-/**
- * Lista de vistas de estadística ordenadas alfabéticamente.
- */
-private val estadisticaViewNames: List<String> by lazy {
-    estadisticaViewsMap.keys.sorted()
-}
+private val estadisticaViewNames: List<String> = estadisticaViewKeys.sorted()
 
 /**
  * Pantalla principal de Estadística.
  *
  * Para agregar una nueva vista:
- * 1. Crea una función Composable en EstadisticaViews.kt
- * 2. Agrégala al mapa estadisticaViewsMap
+ * 1. Crea la función Composable en EstadisticaViews.kt
+ * 2. Añade la clave en [estadisticaViewKeys]
+ * 3. Agrégala al mapa viewsMap de esta función
  */
 @Composable
 fun EstadisticaScreen(
     modifier: Modifier = Modifier,
     username: String? = null,
     puntosDisponibles: Int? = null,
-    onLogout: () -> Unit = {}
+    onLogout: () -> Unit = {},
+    viewModel: EstadisticaViewModel = hiltViewModel()
 ) {
+    val tiposStats    by viewModel.tiposStats.collectAsStateWithLifecycle()
+    val tiposStart    by viewModel.tiposStart.collectAsStateWithLifecycle()
+    val tiposEnd      by viewModel.tiposEnd.collectAsStateWithLifecycle()
+    val semanalStats  by viewModel.semanalStats.collectAsStateWithLifecycle()
+    val mensualStats  by viewModel.mensualStats.collectAsStateWithLifecycle()
+    val anualStats    by viewModel.anualStats.collectAsStateWithLifecycle()
+
+    // Mapa local para poder capturar el estado del ViewModel en cada composable
+    val viewsMap: Map<String, @Composable () -> Unit> = mapOf(
+        "Anual"            to { AnualEstadisticaView(stats = anualStats) },
+        "Mensual"          to { MensualEstadisticaView(stats = mensualStats) },
+        "Semanal"          to { SemanalEstadisticaView(stats = semanalStats) },
+        "Tipos de Residuos" to {
+            TiposResiduosView(
+                stats              = tiposStats,
+                startDateMillis    = tiposStart,
+                endDateMillis      = tiposEnd,
+                onDateRangeChanged = { s, e -> viewModel.updateTiposDateRange(s, e) }
+            )
+        }
+    )
+
     var selectedViewName by remember { mutableStateOf(estadisticaViewNames.firstOrNull() ?: "") }
 
     Column(
@@ -67,7 +88,7 @@ fun EstadisticaScreen(
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            val viewComposable = estadisticaViewsMap[selectedViewName]
+            val viewComposable = viewsMap[selectedViewName]
             if (viewComposable != null) {
                 viewComposable()
             }

@@ -35,13 +35,17 @@ class UserRepository(
                     // A. Cacheamos para operaciones futuras
                     cachedUserRemoteId = apiUserData.id
 
-                    // B. Si existe en la db lo recuperamos, si no lo insertamos (su primer login)
-                    val usuarioEntidad = usuarioDao.getUsuarioById(apiUserData.id.toString())
-                    if (usuarioEntidad != null) {
-                        return@withContext Result.success(usuarioEntidad.toDomain())
-                    } else {
+                    // B. Si existe en la db lo recuperamos, si no lo insertamos (su primer login).
+                    // En ambos casos consultamos la vista con puntos calculados.
+                    val existeEnDb = usuarioDao.getUsuarioById(apiUserData.id.toString())
+                    if (existeEnDb == null) {
                         usuarioDao.insertUsuario(apiUserData.toEntity())
-                        return@withContext Result.success(apiUserData.toEntity().toDomain())
+                    }
+                    val conPuntos = usuarioDao.getUsuarioConPuntosById(apiUserData.id.toString())
+                    if (conPuntos != null) {
+                        return@withContext Result.success(conPuntos.toDomain())
+                    } else {
+                        return@withContext Result.failure(Exception("No se pudo obtener el usuario de la base de datos"))
                     }
                 } else {
                     Result.failure(Exception("Error API: ${response.code()}"))

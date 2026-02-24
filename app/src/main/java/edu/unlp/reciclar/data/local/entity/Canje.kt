@@ -12,7 +12,7 @@ import androidx.room.ForeignKey
     ]
 )
 data class Canje(
-    val usuarioId: String,
+    val usuarioId: Int,
     val cuponId: Int,
     val fechaCanje: Long = System.currentTimeMillis(),
     val fueUsado: Boolean = false

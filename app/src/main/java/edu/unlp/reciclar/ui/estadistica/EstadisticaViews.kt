@@ -379,7 +379,7 @@ fun CanjesHistorialView(
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
-                            text = canjeConDetalle.detalle.descripcionHtml,
+                            text = canjeConDetalle.detalle.nombre,
                             modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.bodyMedium
                         )

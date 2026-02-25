@@ -74,7 +74,7 @@ class CuponesViewModel @Inject constructor(
                 try {
                     logroService.evaluarLogros(user.id)
                 } catch (e: Exception) {
-
+                    _canjeResult.send(Result.failure(Exception("Error al evaluar logros: ${e.message}")))
                 }
 
             } catch (e: Exception) {

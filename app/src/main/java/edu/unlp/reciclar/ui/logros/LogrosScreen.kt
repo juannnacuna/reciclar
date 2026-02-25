@@ -64,7 +64,6 @@ fun LogroItem(
     modifier: Modifier = Modifier
 ) {
     val alpha = if (logroScreen.obtenido) 1f else 0.4f
-    val color = if (logroScreen.obtenido) MaterialTheme.colorScheme.primary else Color.Gray
 
     Card(
         modifier = modifier

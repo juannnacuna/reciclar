@@ -24,4 +24,7 @@ interface CanjeDao {
     @Transaction
     @Query("SELECT * FROM canjes WHERE usuarioId = :usuarioId AND fechaCanje BETWEEN :desde AND :hasta")
     suspend fun getCanjesConDetallePorUsuarioYPeriodo(usuarioId: Int, desde: Long, hasta: Long): List<CanjeConDetalle>
+
+    @Query("SELECT COUNT(*) FROM canjes WHERE usuarioId = :usuarioId")
+    fun totalCanjes(usuarioId: Int): Int
 }

@@ -24,6 +24,7 @@ import edu.unlp.reciclar.data.repository.RankingRepository
 import edu.unlp.reciclar.data.repository.ReportesRepository
 import edu.unlp.reciclar.data.repository.ResiduosRepository
 import edu.unlp.reciclar.data.repository.UserRepository
+import edu.unlp.reciclar.data.service.LogroService
 import edu.unlp.reciclar.data.source.SessionManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -143,8 +144,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideResiduosRepository(apiService: ApiService, userRepository: UserRepository, residuosDao: ResiduoDao): ResiduosRepository {
-        return ResiduosRepository(apiService, userRepository, residuosDao)
+    fun provideResiduosRepository(apiService: ApiService, logroService: LogroService, userRepository: UserRepository, residuosDao: ResiduoDao): ResiduosRepository {
+        return ResiduosRepository(apiService, logroService, userRepository, residuosDao)
     }
 
     @Provides

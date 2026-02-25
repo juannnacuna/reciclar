@@ -1,5 +1,6 @@
 package edu.unlp.reciclar.ui.logros
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,12 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,6 +42,16 @@ fun LogrosScreen (
     viewModel: LogrosViewModel = hiltViewModel()
 ){
     val logrosState by viewModel.logrosState.collectAsStateWithLifecycle()
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedLogro by remember { mutableStateOf<Logro?>(null) }
+
+    if (showDialog) {
+        selectedLogro?.let {
+            LogroDialog(logro = it) {
+                showDialog = false
+            }
+        }
+    }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -52,7 +68,10 @@ fun LogrosScreen (
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(logrosState) { logroScreen ->
-                LogroItem(logroScreen = logroScreen)
+                LogroItem(logroScreen = logroScreen, onLogroClick = {
+                    selectedLogro = it
+                    showDialog = true
+                })
             }
         }
     }
@@ -61,14 +80,16 @@ fun LogrosScreen (
 @Composable
 fun LogroItem(
     logroScreen: LogroScreen,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogroClick: (Logro) -> Unit
 ) {
     val alpha = if (logroScreen.obtenido) 1f else 0.4f
 
     Card(
         modifier = modifier
             .alpha(alpha)
-            .aspectRatio(1f),
+            .aspectRatio(1f)
+            .clickable { onLogroClick(logroScreen.logro) },
         elevation = CardDefaults.cardElevation(defaultElevation = if (logroScreen.obtenido) 2.dp else 0.dp)
     ) {
         Column(
@@ -80,10 +101,30 @@ fun LogroItem(
         ) {
             Text(
                 text = logroScreen.logro.nombre,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
+}
+
+@Composable
+fun LogroDialog(logro: Logro, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = logro.nombre)
+        },
+        text = {
+            Text(text = logro.descripcion)
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text("Cerrar")
+            }
+        }
+    )
 }

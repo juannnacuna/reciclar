@@ -1,5 +1,11 @@
 package edu.unlp.reciclar.ui.qrscanner
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,21 +18,32 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.ui.utils.ReporteModal
+import java.io.File
 
 /**
  * Pantalla de escaneo QR implementada en Compose.
@@ -42,7 +59,8 @@ import edu.unlp.reciclar.ui.utils.ReporteModal
  *   También se podría llamar directamente desde el Screen, pero separarlo
  *   mantiene la pantalla desacoplada del ViewModel si fuera necesario testearla.
  * El Screen permite que el usuario escanee QR, reclame puntos, o reporte residuos
- * a través de un modal dedicado.
+ * a través de un modal dedicado. Tras escanear se muestra la información del QR
+ * para que el usuario pueda decidir si debe reportarlo o reclamar los puntos.
  */
 @Composable
 fun ScanQrScreen(
@@ -56,6 +74,57 @@ fun ScanQrScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val showReporteModal by viewModel.showReporteModal.collectAsStateWithLifecycle()
     val tipoSugerido by viewModel.tipoSugerido.collectAsStateWithLifecycle()
+    val qrData by viewModel.qrData.collectAsStateWithLifecycle()
+    val photoPath by viewModel.photoPath.collectAsStateWithLifecycle()
+
+    // ── Cámara ────────────────────────────────────────────────────────────────
+    val context = LocalContext.current
+    // File creado justo antes de lanzar la cámara, para recuperar su path tras la captura.
+    var pendingPhotoFile by remember { mutableStateOf<File?>(null) }
+    // Flag que activa LaunchedEffect para lanzar la cámara FUERA del árbol del AlertDialog.
+    // Necesario porque llamar launch() directamente desde el onClick de un AlertDialog
+    // en Compose es poco fiable: el dialog está en un subtree de composición separado.
+    var pendingLaunchCamera by remember { mutableStateOf(false) }
+
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            pendingPhotoFile?.absolutePath?.let { viewModel.setPhotoPath(it) }
+        }
+    }
+
+    // Launcher para solicitar permiso de cámara en tiempo de ejecución.
+    // Necesario porque el manifiesto declara CAMERA y algunos dispositivos
+    // exigen el grant explícito antes de resolver ACTION_IMAGE_CAPTURE.
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            pendingLaunchCamera = true
+        }
+    }
+
+    // Se ejecuta en el ámbito del Screen (fuera del dialog) cuando el flag se activa.
+    LaunchedEffect(pendingLaunchCamera) {
+        if (pendingLaunchCamera) {
+            pendingLaunchCamera = false
+            try {
+                val photoFile = File.createTempFile(
+                    "reporte_${System.currentTimeMillis()}",
+                    ".jpg",
+                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                )
+                val uri: Uri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    photoFile
+                )
+                pendingPhotoFile = photoFile
+                takePictureLauncher.launch(uri)
+            } catch (_: Exception) { /* no-op */ }
+        }
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
 
@@ -87,6 +156,33 @@ fun ScanQrScreen(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // ── Información del QR escaneado ──────────────────────────────────
+            // Se muestra mientras hay un QR activo, para que el usuario pueda
+            // evaluar si corresponde reclamar puntos o reportar el residuo.
+            if (qrData != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Información del QR",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
+                        QrInfoRow(label = "Tipo", value = qrData!!.tipo)
+                        QrInfoRow(label = "Puntos", value = "${qrData!!.puntos}")
+                    }
+                }
+            }
 
             Text(
                 text = statusMessage,
@@ -152,9 +248,47 @@ fun ScanQrScreen(
     ReporteModal(
         showDialog = showReporteModal,
         onDismiss = { viewModel.cerrarReporteModal() },
-        onSubmit = { tipo -> viewModel.enviarReporte(tipo) },
+        onSubmit = { tipo: String -> viewModel.enviarReporte(tipo) },
         tipoSugerido = tipoSugerido,
-        onTipoSugridoChange = { viewModel.actualizarTipoSugerido(it) },
-        isLoading = isLoading
+        onTipoSugridoChange = { valor: String -> viewModel.actualizarTipoSugerido(valor) },
+        isLoading = isLoading,
+        photoPath = photoPath,
+        onTakePhoto = {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                pendingLaunchCamera = true
+            } else {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
     )
 }
+
+// ── Helper composable ─────────────────────────────────────────────────────────
+
+@Composable
+private fun QrInfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    }
+}
+
+

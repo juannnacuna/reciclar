@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Rutas para FileProvider: permitimos acceso a files, cache y almacenamiento externo.
-         Ajusta los paths si en tu app usas rutas específicas. -->
+    <!-- Rutas genéricas para FileProvider -->
     <external-path name="external_files" path="." />
     <external-files-path name="external_app_files" path="." />
     <files-path name="internal_files" path="." />
     <cache-path name="cache" path="." />
-</paths>
 
+    <!--
+        Ruta específica para fotos de reportes de residuo.
+        Se usa al capturar fotos con getExternalFilesDir(DIRECTORY_PICTURES).
+    -->
+    <external-files-path
+        name="reporte_photos"
+        path="Pictures/" />
+</paths>

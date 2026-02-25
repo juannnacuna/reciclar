@@ -11,7 +11,8 @@ class ReportesRepository(
 ) {
     suspend fun reportarResiduo(
         rawJson: String,
-        tipoSugerido: String
+        tipoSugerido: String,
+        photoPath: String = ""
     ): Result<Unit> {
         return try {
             // Intenta parsear el QR
@@ -30,7 +31,7 @@ class ReportesRepository(
                 usuarioId = usuarioId,
                 timestamp = System.currentTimeMillis(),
                 qrCode = qrData.id,
-                photoPath = "", // TODO: agregar path de foto si es necesario
+                photoPath = photoPath,
                 tipoSugerido = tipoSugerido
             )
             reporteDao.insertReporte(reporte)

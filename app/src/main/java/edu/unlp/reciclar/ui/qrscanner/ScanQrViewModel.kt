@@ -2,7 +2,9 @@ package edu.unlp.reciclar.ui.qrscanner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import edu.unlp.reciclar.data.remote.dto.QrData
 import edu.unlp.reciclar.data.repository.ReportesRepository
 import edu.unlp.reciclar.data.repository.ResiduosRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,10 +33,23 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
     private val _tipoSugerido = MutableStateFlow("")
     val tipoSugerido: StateFlow<String> = _tipoSugerido
 
+    /** Datos parseados del QR escaneado — null mientras no hay QR activo. */
+    private val _qrData = MutableStateFlow<QrData?>(null)
+    val qrData: StateFlow<QrData?> = _qrData
+
+    /** Path absoluto de la foto de evidencia adjunta al reporte (vacío si no hay foto). */
+    private val _photoPath = MutableStateFlow("")
+    val photoPath: StateFlow<String> = _photoPath
+
     private var currentQrJson: String? = null
 
     fun onQrScanned(rawJson: String) {
         currentQrJson = rawJson
+        _qrData.value = try {
+            Gson().fromJson(rawJson, QrData::class.java)
+        } catch (e: Exception) {
+            null
+        }
         _statusMessage.value = "QR Detectado. Toca 'Reclamar Puntos' para procesar."
         _isClaimButtonVisible.value = true
         _isReportButtonVisible.value = true
@@ -44,6 +59,11 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
         _statusMessage.value = error
         _isClaimButtonVisible.value = false
         _isReportButtonVisible.value = false
+    }
+
+    /** Guarda el path absoluto de la foto tomada para adjuntarla al reporte. */
+    fun setPhotoPath(path: String) {
+        _photoPath.value = path
     }
 
     fun reclamarPuntos() = viewModelScope.launch {
@@ -66,6 +86,8 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
                 _isClaimButtonVisible.value = false
                 _isReportButtonVisible.value = false
                 currentQrJson = null
+                _qrData.value = null
+                _photoPath.value = ""
             } else {
                 _statusMessage.value = result.exceptionOrNull()?.message ?: "Error desconocido"
                 _isClaimButtonVisible.value = true
@@ -82,6 +104,8 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
     }
 
     fun reportarResiduo() {
+        // Pre-poblar el tipo desde el QR para que el usuario no tenga que buscarlo
+        _tipoSugerido.value = _qrData.value?.tipo ?: ""
         _showReporteModal.value = true
     }
 
@@ -105,11 +129,14 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
         _statusMessage.value = "Enviando reporte..."
 
         try {
-            val result = reportesRepository.reportarResiduo(qrJson, tipoSugerido)
+            val result = reportesRepository.reportarResiduo(qrJson, tipoSugerido, _photoPath.value)
             if (result.isSuccess) {
                 _statusMessage.value = "¡Reporte enviado exitosamente! Gracias por ayudarnos a mejorar."
                 _isReportButtonVisible.value = false
+                _isClaimButtonVisible.value = false
                 currentQrJson = null
+                _qrData.value = null
+                _photoPath.value = ""
                 cerrarReporteModal()
             } else {
                 _statusMessage.value = result.exceptionOrNull()?.message ?: "Error al enviar el reporte"

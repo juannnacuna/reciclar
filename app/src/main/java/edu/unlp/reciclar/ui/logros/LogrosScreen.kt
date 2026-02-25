@@ -1,5 +1,6 @@
 package edu.unlp.reciclar.ui.logros
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -25,10 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.local.entity.Logro
 
 data class LogroScreen(
@@ -85,6 +90,14 @@ fun LogroItem(
 ) {
     val alpha = if (logroScreen.obtenido) 1f else 0.4f
 
+    val context = LocalContext.current
+    val imageResId = context.resources.getIdentifier(
+        "logro_${logroScreen.logro.id}",
+        "drawable",
+        context.packageName
+    )
+    val finalResId = if (imageResId != 0) imageResId else R.drawable.logro_default
+
     Card(
         modifier = modifier
             .alpha(alpha)
@@ -99,11 +112,16 @@ fun LogroItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(id = finalResId),
+                contentDescription = logroScreen.logro.nombre,
+                modifier = Modifier.size(48.dp)
+            )
             Text(
                 text = logroScreen.logro.nombre,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }

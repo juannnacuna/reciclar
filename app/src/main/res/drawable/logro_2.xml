@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Fondo circular naranja -->
+    <path
+        android:fillColor="#FF9800"
+        android:pathData="M48,48m-44,0a44,44 0,1 1,88 0a44,44 0,1 1,-88 0" />
+    <!-- Carrito de compras simplificado -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M28,36L32,36L40,60L64,60L68,44L36,44"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,68m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,68m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+</vector>

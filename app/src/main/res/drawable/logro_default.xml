@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Fondo circular gris -->
+    <path
+        android:fillColor="#9E9E9E"
+        android:pathData="M48,48m-44,0a44,44 0,1 1,88 0a44,44 0,1 1,-88 0" />
+    <!-- Estrella genérica -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,28L53.1,41.2L67.2,42.4L56.4,51.6L59.6,65.4L48,58.4L36.4,65.4L39.6,51.6L28.8,42.4L42.9,41.2Z" />
+</vector>

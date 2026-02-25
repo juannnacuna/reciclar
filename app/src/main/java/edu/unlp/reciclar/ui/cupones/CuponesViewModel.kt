@@ -7,6 +7,7 @@ import edu.unlp.reciclar.data.local.dao.CanjeDao
 import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.entity.Canje
 import edu.unlp.reciclar.data.local.entity.Cupon
+import edu.unlp.reciclar.data.local.relation.CanjeConDetalle
 import edu.unlp.reciclar.data.repository.UserRepository
 import edu.unlp.reciclar.data.service.LogroService
 import kotlinx.coroutines.channels.Channel
@@ -25,14 +26,20 @@ class CuponesViewModel @Inject constructor(
     private val logroService: LogroService
 ) : ViewModel() {
 
+    // Cupones disponibles para canjear
     private val _cuponesState = MutableStateFlow<List<Cupon>>(emptyList())
     val cuponesState: StateFlow<List<Cupon>> = _cuponesState.asStateFlow()
+
+    // Cupones ya canjeados por el usuario (con detalle)
+    private val _misCupones = MutableStateFlow<List<CanjeConDetalle>>(emptyList())
+    val misCupones: StateFlow<List<CanjeConDetalle>> = _misCupones.asStateFlow()
 
     private val _canjeResult = Channel<Result<String>>()
     val canjeResult = _canjeResult.receiveAsFlow()
 
     init {
         loadCupones()
+        loadMisCupones()
     }
 
     private fun loadCupones() {
@@ -45,6 +52,19 @@ class CuponesViewModel @Inject constructor(
             } catch (e: Exception) {
                 _cuponesState.value = emptyList()
                 _canjeResult.send(Result.failure(Exception("Error al recuperar los cupones: ${e.message}")))
+            }
+        }
+    }
+
+    private fun loadMisCupones() {
+        viewModelScope.launch {
+            try {
+                val usuarioId = userRepository.getUser().getOrNull()?.id ?: return@launch
+                canjeDao.getCanjesConDetallePorUsuario(usuarioId).collect { canjes ->
+                    _misCupones.value = canjes
+                }
+            } catch (e: Exception) {
+                _misCupones.value = emptyList()
             }
         }
     }

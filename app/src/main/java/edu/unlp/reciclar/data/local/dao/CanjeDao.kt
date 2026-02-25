@@ -27,4 +27,8 @@ interface CanjeDao {
 
     @Query("SELECT COUNT(*) FROM canjes WHERE usuarioId = :usuarioId")
     suspend fun totalCanjes(usuarioId: Int): Int
+
+    @Transaction
+    @Query("SELECT * FROM canjes WHERE usuarioId = :usuarioId ORDER BY fechaCanje DESC")
+    fun getCanjesConDetallePorUsuario(usuarioId: Int): Flow<List<CanjeConDetalle>>
 }

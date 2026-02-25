@@ -30,7 +30,6 @@ class LogroService @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                // Si falla un logro individual, seguir con los demás
                 e.printStackTrace()
             }
         }

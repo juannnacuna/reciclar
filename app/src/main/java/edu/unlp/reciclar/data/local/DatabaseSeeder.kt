@@ -2,6 +2,7 @@ package edu.unlp.reciclar.data.local
 
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import edu.unlp.reciclar.data.local.entity.Logro
 
 /**
  * Seeder de datos de prueba para desarrollo.
@@ -95,6 +96,44 @@ object DatabaseSeeder {
         SeedEntry(60, "Papel",    10)
     )
 
+    val todosLosLogros = listOf(
+            Logro(
+                id = 1,
+                nombre = "Iniciativa Verde",
+                descripcion = "Obtener 200 puntos acumulados",
+                condicion = """
+            {
+              "tipo": "puntos_totales",
+              "valor": 200
+            }
+        """.trimIndent()
+            ),
+        Logro(
+    id = 2,
+    nombre = "Comprador compulsivo",
+    descripcion = "Canjear 10 cupones",
+    condicion = """
+            {
+              "tipo": "canjes_totales",
+              "valor": 10
+            }
+        """.trimIndent()
+    ),
+
+    Logro(
+    id = 3,
+    nombre = "Rey del Plástico",
+    descripcion = "Reciclar 10 residuos de plástico",
+    condicion = """
+            {
+              "tipo": "residuos_tipo",
+              "residuo": "Plastico",
+              "cantidad": 10
+            }
+        """.trimIndent()
+    )
+    )
+
     val callback = object : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
@@ -104,6 +143,13 @@ object DatabaseSeeder {
                 "INSERT INTO usuarios (id, username) " +
                 "VALUES ($USER_ID, 'admin')"
             )
+
+            todosLosLogros.forEachIndexed { index, logro ->
+                db.execSQL(
+                    "INSERT INTO logros (id, nombre, descripcion, condicion) " +
+                    "VALUES ('${logro.id}', '${logro.nombre}', '${logro.descripcion}', '${logro.condicion}')"
+                )
+            }
 
             // Residuos distribuidos en el tiempo
             // (strftime('%s','now') - N * 86400) * 1000  ≡  timestamp en ms hace N días

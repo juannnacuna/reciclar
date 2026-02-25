@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Functions
@@ -44,6 +45,8 @@ import edu.unlp.reciclar.ui.components.AppTopBar
 import edu.unlp.reciclar.ui.cupones.CuponesScreen
 import edu.unlp.reciclar.ui.cupones.CuponesViewModel
 import edu.unlp.reciclar.ui.estadistica.EstadisticaViewModel
+import edu.unlp.reciclar.ui.logros.LogrosScreen
+import edu.unlp.reciclar.ui.logros.LogrosViewModel
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -55,11 +58,12 @@ private data class BottomNavItem(
 )
 
 private val bottomNavItems = listOf(
-    BottomNavItem(AppDestination.ScanQr, Icons.Default.QrCodeScanner, "Scan QR"),
-    BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking"),
-    BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, "Estadística"),
-    BottomNavItem(AppDestination.Map, Icons.Default.Place, "Mapa"),
-    BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, "Cupones")
+    BottomNavItem(AppDestination.ScanQr, Icons.Default.QrCodeScanner, ""),
+    BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, ""),
+    BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, ""),
+    BottomNavItem(AppDestination.Map, Icons.Default.Place, ""),
+    BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, ""),
+    BottomNavItem(AppDestination.Logros, Icons.Default.Done, "")
 )
 
 /**
@@ -253,6 +257,13 @@ fun MainApp() {
                 composable(AppDestination.Cupones.route) {
                     val viewModel: CuponesViewModel = hiltViewModel()
                     CuponesScreen(
+                        viewModel = viewModel
+                    )
+                }
+
+                composable(AppDestination.Logros.route) {
+                    val viewModel: LogrosViewModel = hiltViewModel()
+                    LogrosScreen(
                         viewModel = viewModel
                     )
                 }

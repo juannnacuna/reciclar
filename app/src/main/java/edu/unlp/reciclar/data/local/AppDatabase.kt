@@ -16,10 +16,11 @@ import edu.unlp.reciclar.data.local.entity.Logro
 import edu.unlp.reciclar.data.local.entity.Reporte
 import edu.unlp.reciclar.data.local.entity.Residuo
 import edu.unlp.reciclar.data.local.entity.Usuario
+import edu.unlp.reciclar.data.local.entity.UsuarioLogros
 import edu.unlp.reciclar.data.local.entity.UsuarioConPuntos
 
 @Database(
-    entities = [Canje::class, Cupon::class, Logro::class, Residuo::class, Reporte::class, Usuario::class],
+    entities = [Canje::class, Cupon::class, Logro::class, Residuo::class, Reporte::class, Usuario::class, UsuarioLogros::class],
     views = [UsuarioConPuntos::class],
     version = 1,
     exportSchema = false

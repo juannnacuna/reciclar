@@ -7,10 +7,13 @@ import edu.unlp.reciclar.data.remote.dto.QrData
 import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoRequest
 import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoResponse
 import edu.unlp.reciclar.data.remote.ApiService
+import edu.unlp.reciclar.data.service.LogroService
 import edu.unlp.reciclar.domain.model.ResultadoReclamo
+
 
 class ResiduosRepository(
     private val apiService: ApiService,
+    private val logroService: LogroService,
     private val usuarioRepository: UserRepository,
     private val residuosDao: ResiduoDao
 ) {
@@ -40,6 +43,7 @@ class ResiduosRepository(
                 puntos = qrData.puntos
             )
             residuosDao.insertReciclaje(residuo)
+            logroService.evaluarLogros(usuarioId)
 
             // Los puntos se calculan automáticamente desde la vista usuarios_con_puntos
             // no es necesario actualizarlos manualmente en la entidad Usuario.

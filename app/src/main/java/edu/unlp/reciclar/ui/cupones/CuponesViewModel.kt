@@ -8,6 +8,7 @@ import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.entity.Canje
 import edu.unlp.reciclar.data.local.entity.Cupon
 import edu.unlp.reciclar.data.repository.UserRepository
+import edu.unlp.reciclar.data.service.LogroService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class CuponesViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val canjeDao: CanjeDao,
-    private val cuponDao: CuponDao
+    private val cuponDao: CuponDao,
+    private val logroService: LogroService
 ) : ViewModel() {
 
     private val _cuponesState = MutableStateFlow<List<Cupon>>(emptyList())
@@ -68,8 +70,13 @@ class CuponesViewModel @Inject constructor(
                     cuponId = cupon.id
                 )
                 canjeDao.insertCanje(nuevoCanje)
-
                 _canjeResult.send(Result.success("¡Cupón canjeado con éxito!"))
+                try {
+                    logroService.evaluarLogros(user.id)
+                } catch (e: Exception) {
+                    _canjeResult.send(Result.failure(Exception("Error al evaluar logros: ${e.message}")))
+                }
+
             } catch (e: Exception) {
                 _canjeResult.send(Result.failure(Exception("Error al procesar el canje: ${e.message}")))
             }

@@ -1,16 +1,23 @@
 package edu.unlp.reciclar.data.service
 
-import edu.unlp.reciclar.data.local.dao.CanjeDao
 import edu.unlp.reciclar.data.local.dao.LogroDao
-import edu.unlp.reciclar.data.local.dao.ResiduoDao
 import edu.unlp.reciclar.data.local.entity.UsuarioLogros
+import edu.unlp.reciclar.data.service.strategy.CondicionStrategyFactory
 import org.json.JSONObject
 import javax.inject.Inject
 
+/**
+ * Servicio que evalúa si un usuario desbloqueó logros nuevos.
+ *
+ * Usa el patrón Strategy (vía [CondicionStrategyFactory]) para delegar
+ * la evaluación de cada tipo de condición a una clase especializada.
+ * Para agregar un nuevo tipo de logro solo hay que:
+ *   1. Crear una clase que implemente CondicionStrategy
+ *   2. Registrarla en CondicionStrategyFactory
+ */
 class LogroService @Inject constructor(
-    private val residuoDao: ResiduoDao,
     private val logroDao: LogroDao,
-    private val canjeDao: CanjeDao
+    private val strategyFactory: CondicionStrategyFactory
 ) {
     suspend fun evaluarLogros(usuarioId: Int) {
         logroDao.getAllLogros().forEach { logro ->
@@ -31,26 +38,8 @@ class LogroService @Inject constructor(
 
     private suspend fun cumpleCondicion(usuarioId: Int, condicionJson: String): Boolean {
         val json = JSONObject(condicionJson)
-
-        return when (json.getString("tipo")) {
-
-            "puntos_totales" -> {
-                val objetivo = json.getInt("valor")
-                residuoDao.puntosTotales(usuarioId) >= objetivo
-            }
-
-            "residuos_tipo" -> {
-                val tipo = json.getString("residuo")
-                val cantidad = json.getInt("cantidad")
-                residuoDao.residuosTipo(usuarioId, tipo) >= cantidad
-            }
-
-            "canjes_totales" -> {
-                val objetivo = json.getInt("valor")
-                canjeDao.totalCanjes(usuarioId) >= objetivo
-            }
-
-            else -> false
-        }
+        val tipo = json.getString("tipo")
+        val strategy = strategyFactory.get(tipo) ?: return false
+        return strategy.cumple(usuarioId, json)
     }
 }

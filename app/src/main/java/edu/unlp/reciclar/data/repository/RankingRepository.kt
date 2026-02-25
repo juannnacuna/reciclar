@@ -25,4 +25,23 @@ class RankingRepository(private val apiService: ApiService) {
             Result.failure(e)
         }
     }
+
+    suspend fun getRankingSemanal(tipoResiduo: String? = null): Result<List<RankingEntry>> {
+        return try {
+            val response = apiService.getRankingSemanal(tipoResiduo = tipoResiduo)
+            if (response.isSuccessful) {
+                val rankingResponses = response.body()
+                if (rankingResponses != null) {
+                    val rankingEntries = rankingResponses.map { it.toDomainModel() }
+                    Result.success(rankingEntries)
+                } else {
+                    Result.failure(Exception("La respuesta del ranking semanal está vacía"))
+                }
+            } else {
+                Result.failure(Exception("Error al obtener el ranking semanal: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

@@ -5,7 +5,6 @@ import edu.unlp.reciclar.data.remote.dto.LoginRequest
 import edu.unlp.reciclar.data.remote.dto.PosicionResponse
 import edu.unlp.reciclar.data.remote.dto.PuntosUsuario
 import edu.unlp.reciclar.data.remote.dto.RankingResponse
-import edu.unlp.reciclar.data.remote.dto.RankingUser
 import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoRequest
 import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoResponse
 import edu.unlp.reciclar.data.remote.dto.RefreshTokenRequest
@@ -67,7 +66,7 @@ interface ApiService {
     @GET("api/ranking/semanal/")
     suspend fun getRankingSemanal(
         @Query("tipo_residuo") tipoResiduo: String? = null
-    ): Response<List<RankingUser>>
+    ): Response<List<RankingResponse>>
 
     // Residuos
     @POST("api/residuo/reclamar/")

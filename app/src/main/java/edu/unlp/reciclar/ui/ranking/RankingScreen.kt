@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
@@ -53,17 +52,18 @@ fun RankingScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
 
+    val periodoOptions = listOf("Histórico", "Semanal")
     val residueTypes = listOf("Todos", "Plastico", "Vidrio", "Papel", "Metal", "Carton")
 
-    // remember: almacena un valor a través de recomposiciones.
-    // Sin remember, el estado se resetearía cada vez que Compose re-ejecuta esta función.
+    var selectedPeriodo by remember { mutableStateOf(periodoOptions[0]) }
     var selectedType by remember { mutableStateOf(residueTypes[0]) }
 
-    // LaunchedEffect(key): lanza una corrutina cuando el Composable entra en composición,
-    // y la relanza cada vez que [selectedType] cambia. Reemplaza al OnItemSelectedListener
-    // del Spinner. Cuando se destruye el Composable, la corrutina se cancela automáticamente.
-    LaunchedEffect(selectedType) {
-        viewModel.fetchRanking(if (selectedType == "Todos") null else selectedType)
+    // LaunchedEffect: relanza la consulta cada vez que cambia el período o el tipo de residuo.
+    LaunchedEffect(selectedPeriodo, selectedType) {
+        viewModel.fetchRanking(
+            tipoResiduo = if (selectedType == "Todos") null else selectedType,
+            semanal = selectedPeriodo == "Semanal"
+        )
     }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -71,13 +71,22 @@ fun RankingScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ResiduoDropdown(
+            FilterDropdown(
+                label = "Período",
+                options = periodoOptions,
+                selected = selectedPeriodo,
+                onSelected = { selectedPeriodo = it },
+                modifier = Modifier.weight(1f)
+            )
+            FilterDropdown(
+                label = "Tipo de residuo",
                 options = residueTypes,
                 selected = selectedType,
-                onSelected = { selectedType = it }
+                onSelected = { selectedType = it },
+                modifier = Modifier.weight(1f)
             )
         }
 
@@ -106,32 +115,35 @@ fun RankingScreen(
 }
 
 /**
- * Dropdown de tipo de residuo usando el componente ExposedDropdownMenuBox de Material3.
- * Es private porque es un detalle de implementación de esta pantalla.
+ * Dropdown genérico reutilizable para filtros de la pantalla de ranking.
+ * Soporta tanto el filtro de período (Histórico/Semanal) como el de tipo de residuo.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ResiduoDropdown(
+private fun FilterDropdown(
+    label: String,
     options: List<String>,
     selected: String,
-    onSelected: (String) -> Unit
+    onSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it }
+        onExpandedChange = { expanded = it },
+        modifier = modifier
     ) {
         OutlinedTextField(
             value = selected,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Tipo de residuo") },
+            label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             modifier = Modifier
                 .menuAnchor()
-                .width(200.dp)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,

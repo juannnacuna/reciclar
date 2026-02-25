@@ -27,12 +27,16 @@ class RankingViewModel @Inject constructor(private val rankingRepository: Rankin
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    fun fetchRanking(tipoResiduo: String? = null) {
+    fun fetchRanking(tipoResiduo: String? = null, semanal: Boolean = false) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
 
-            val result = rankingRepository.getRanking(tipoResiduo = tipoResiduo)
+            val result = if (semanal) {
+                rankingRepository.getRankingSemanal(tipoResiduo = tipoResiduo)
+            } else {
+                rankingRepository.getRanking(tipoResiduo = tipoResiduo)
+            }
 
             result.onSuccess {
                 _ranking.value = it

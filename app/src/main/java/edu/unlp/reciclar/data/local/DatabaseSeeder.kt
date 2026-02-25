@@ -134,6 +134,214 @@ object DatabaseSeeder {
     )
     )
 
+    // ── Trivias de concientización ambiental ─────────────────
+
+    private data class TriviaSeed(
+        val pregunta: String,
+        val opcionA: String,
+        val opcionB: String,
+        val opcionC: String,
+        val opcionD: String,
+        val respuestaCorrectaIndex: Int,
+        val explicacion: String
+    )
+
+    private val triviasSeed = listOf(
+        TriviaSeed(
+            pregunta = "¿Cuánto tarda en degradarse una botella de plástico?",
+            opcionA = "10 años",
+            opcionB = "100 años",
+            opcionC = "450 años",
+            opcionD = "1000 años",
+            respuestaCorrectaIndex = 2,
+            explicacion = "Una botella de plástico PET tarda aproximadamente 450 años en degradarse completamente en la naturaleza."
+        ),
+        TriviaSeed(
+            pregunta = "¿Qué porcentaje del agua del planeta es dulce y accesible?",
+            opcionA = "25%",
+            opcionB = "10%",
+            opcionC = "3%",
+            opcionD = "Menos del 1%",
+            respuestaCorrectaIndex = 3,
+            explicacion = "Solo el 2.5% del agua del planeta es dulce, y de esa menos del 1% es accesible para consumo humano."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuál de estos materiales NO es reciclable?",
+            opcionA = "Cartón limpio",
+            opcionB = "Papel de servilleta usado",
+            opcionC = "Lata de aluminio",
+            opcionD = "Botella de vidrio",
+            respuestaCorrectaIndex = 1,
+            explicacion = "El papel de servilleta usado contiene residuos orgánicos que impiden su reciclaje. Va al contenedor de residuos orgánicos o compost."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuántos litros de agua se necesitan para producir 1 kg de carne vacuna?",
+            opcionA = "500 litros",
+            opcionB = "1.500 litros",
+            opcionC = "5.000 litros",
+            opcionD = "15.000 litros",
+            respuestaCorrectaIndex = 3,
+            explicacion = "La producción de 1 kg de carne vacuna requiere aproximadamente 15.000 litros de agua, considerando el riego de cultivos para alimento animal, el agua de bebida y el proceso industrial."
+        ),
+        TriviaSeed(
+            pregunta = "¿Qué significan las 3R de la ecología?",
+            opcionA = "Reciclar, Reutilizar, Recuperar",
+            opcionB = "Reducir, Reutilizar, Reciclar",
+            opcionC = "Reducir, Recuperar, Rechazar",
+            opcionD = "Reciclar, Reducir, Rechazar",
+            respuestaCorrectaIndex = 1,
+            explicacion = "Las 3R son Reducir, Reutilizar y Reciclar, en ese orden de prioridad. Primero reducir el consumo, luego reutilizar lo que se pueda, y finalmente reciclar."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuál es el gas de efecto invernadero más abundante producido por actividad humana?",
+            opcionA = "Metano (CH₄)",
+            opcionB = "Óxido nitroso (N₂O)",
+            opcionC = "Dióxido de carbono (CO₂)",
+            opcionD = "Vapor de agua",
+            respuestaCorrectaIndex = 2,
+            explicacion = "El CO₂ es el gas de efecto invernadero más abundante generado por actividades humanas, principalmente por la quema de combustibles fósiles."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuánto tiempo tarda un chicle en degradarse?",
+            opcionA = "1 año",
+            opcionB = "5 años",
+            opcionC = "25 años",
+            opcionD = "No se degrada nunca",
+            respuestaCorrectaIndex = 1,
+            explicacion = "Un chicle tarda aproximadamente 5 años en degradarse. Su base es un polímero sintético similar al plástico."
+        ),
+        TriviaSeed(
+            pregunta = "¿Qué tipo de energía renovable genera más electricidad a nivel mundial?",
+            opcionA = "Solar",
+            opcionB = "Eólica",
+            opcionC = "Hidroeléctrica",
+            opcionD = "Geotérmica",
+            respuestaCorrectaIndex = 2,
+            explicacion = "La energía hidroeléctrica es la fuente renovable que más electricidad genera a nivel mundial, representando cerca del 16% de la generación eléctrica global."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuántas veces se puede reciclar el vidrio sin perder calidad?",
+            opcionA = "5 veces",
+            opcionB = "10 veces",
+            opcionC = "50 veces",
+            opcionD = "Infinitas veces",
+            respuestaCorrectaIndex = 3,
+            explicacion = "El vidrio es 100% reciclable y se puede reciclar infinitas veces sin perder calidad ni pureza, a diferencia del plástico o el papel."
+        ),
+        TriviaSeed(
+            pregunta = "¿Qué porcentaje de la deforestación mundial se debe a la agricultura?",
+            opcionA = "10%",
+            opcionB = "30%",
+            opcionC = "50%",
+            opcionD = "Más del 70%",
+            respuestaCorrectaIndex = 3,
+            explicacion = "Más del 70% de la deforestación tropical se debe a la expansión agrícola, incluyendo ganadería y cultivos como soja y palma aceitera."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuántas bolsas de plástico se usan por minuto en el mundo?",
+            opcionA = "100 mil",
+            opcionB = "1 millón",
+            opcionC = "10 millones",
+            opcionD = "100 millones",
+            respuestaCorrectaIndex = 1,
+            explicacion = "Se estima que se usan aproximadamente 1 millón de bolsas de plástico por minuto en todo el mundo, la mayoría con un tiempo de uso de apenas 15 minutos."
+        ),
+        TriviaSeed(
+            pregunta = "¿Qué es el compostaje?",
+            opcionA = "Quemar residuos orgánicos",
+            opcionB = "Transformar residuos orgánicos en abono natural",
+            opcionC = "Enterrar basura en el suelo",
+            opcionD = "Separar residuos por color",
+            respuestaCorrectaIndex = 1,
+            explicacion = "El compostaje es un proceso biológico que transforma residuos orgánicos (restos de comida, hojas, etc.) en abono natural rico en nutrientes para el suelo."
+        ),
+        TriviaSeed(
+            pregunta = "¿Qué isla de basura del Pacífico tiene un tamaño comparable a qué país?",
+            opcionA = "Uruguay",
+            opcionB = "Francia",
+            opcionC = "Argentina",
+            opcionD = "España",
+            respuestaCorrectaIndex = 1,
+            explicacion = "La Gran Isla de Basura del Pacífico tiene una extensión estimada de 1.6 millones de km², comparable al territorio de Francia (tres veces su tamaño)."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuánta energía se ahorra al reciclar una lata de aluminio?",
+            opcionA = "25%",
+            opcionB = "50%",
+            opcionC = "75%",
+            opcionD = "95%",
+            respuestaCorrectaIndex = 3,
+            explicacion = "Reciclar una lata de aluminio ahorra hasta un 95% de la energía necesaria para fabricar una nueva desde cero, además de reducir la minería."
+        ),
+        TriviaSeed(
+            pregunta = "¿Cuál es la principal causa de pérdida de biodiversidad?",
+            opcionA = "Contaminación del aire",
+            opcionB = "Destrucción de hábitats",
+            opcionC = "Cambio climático",
+            opcionD = "Caza furtiva",
+            respuestaCorrectaIndex = 1,
+            explicacion = "La destrucción y fragmentación de hábitats naturales es la principal causa de pérdida de biodiversidad a nivel global, afectando al 85% de las especies amenazadas."
+        )
+    )
+
+    // ── Consejos de concientización ambiental ────────────────
+
+    private data class ConsejoSeed(
+        val titulo: String,
+        val contenido: String
+    )
+
+    private val consejosSeed = listOf(
+        ConsejoSeed(
+            titulo = "Llevá tu bolsa reutilizable",
+            contenido = "Una bolsa de tela puede reemplazar más de 700 bolsas de plástico a lo largo de su vida útil. Llevá siempre una en tu mochila o cartera."
+        ),
+        ConsejoSeed(
+            titulo = "Cerrá la canilla mientras te cepillás",
+            contenido = "Dejar la canilla abierta mientras te lavás los dientes desperdicia hasta 12 litros de agua por minuto. En un año podés ahorrar más de 8.000 litros."
+        ),
+        ConsejoSeed(
+            titulo = "Separá tus residuos en origen",
+            contenido = "Tener dos cestos en casa (reciclable y no reciclable) facilita enormemente el proceso de reciclaje y reduce la contaminación en los rellenos sanitarios."
+        ),
+        ConsejoSeed(
+            titulo = "Usá luz natural siempre que puedas",
+            contenido = "Aprovechá la luz del sol durante el día. Además de ahorrar energía, la luz natural mejora tu estado de ánimo y productividad."
+        ),
+        ConsejoSeed(
+            titulo = "Evitá los productos de un solo uso",
+            contenido = "Cubiertos, vasos y sorbetes descartables tardan cientos de años en degradarse. Optá por alternativas reutilizables: son más económicas a largo plazo."
+        ),
+        ConsejoSeed(
+            titulo = "Compostá tus residuos orgánicos",
+            contenido = "Los restos de frutas, verduras, yerba y café pueden convertirse en abono para tus plantas. El compostaje reduce un 40% el volumen de tu basura."
+        ),
+        ConsejoSeed(
+            titulo = "Desenchufá los aparatos que no usás",
+            contenido = "Los electrodomésticos en stand-by consumen energía innecesariamente ('consumo vampiro'). Desenchufarlos puede ahorrarte hasta un 10% en tu factura de luz."
+        ),
+        ConsejoSeed(
+            titulo = "Elegí productos con menos packaging",
+            contenido = "Al hacer las compras, preferí productos con envases mínimos o reciclables. El packaging representa cerca del 40% de los residuos plásticos que generamos."
+        ),
+        ConsejoSeed(
+            titulo = "Plantá un árbol o cuidá una planta",
+            contenido = "Un solo árbol puede absorber hasta 22 kg de CO₂ al año y producir oxígeno suficiente para dos personas. Cada planta cuenta."
+        ),
+        ConsejoSeed(
+            titulo = "Reutilizá antes de reciclar",
+            contenido = "Antes de tirar algo al contenedor de reciclaje, pensá si podés darle otro uso: frascos como recipientes, remeras como trapos, cajas como organizadores."
+        ),
+        ConsejoSeed(
+            titulo = "Duchas más cortas",
+            contenido = "Reducir tu ducha de 10 a 5 minutos ahorra aproximadamente 100 litros de agua cada vez. ¡Ponete un temporizador!"
+        ),
+        ConsejoSeed(
+            titulo = "Caminá, pedaleá o usá transporte público",
+            contenido = "El transporte es responsable del 25% de las emisiones de CO₂. Elegir caminar, andar en bici o usar transporte público hace una diferencia real."
+        )
+    )
+
     val callback = object : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
@@ -185,6 +393,31 @@ object DatabaseSeeder {
                 ($USER_ID, 1, (CAST(strftime('%s','now') AS INTEGER) - 2 * 86400) * 1000, 1),
                 ($USER_ID, 2, (CAST(strftime('%s','now') AS INTEGER) - 5 * 86400) * 1000, 0)
             """)
+
+            // Trivias de concientización ambiental
+            triviasSeed.forEachIndexed { index, trivia ->
+                val id = index + 1
+                db.execSQL(
+                    "INSERT INTO trivias (id, pregunta, opcionA, opcionB, opcionC, opcionD, respuestaCorrectaIndex, explicacion) " +
+                    "VALUES ($id, '${trivia.pregunta.replace("'", "''")}', " +
+                    "'${trivia.opcionA.replace("'", "''")}', " +
+                    "'${trivia.opcionB.replace("'", "''")}', " +
+                    "'${trivia.opcionC.replace("'", "''")}', " +
+                    "'${trivia.opcionD.replace("'", "''")}', " +
+                    "${trivia.respuestaCorrectaIndex}, " +
+                    "'${trivia.explicacion.replace("'", "''")}')"
+                )
+            }
+
+            // Consejos de concientización ambiental
+            consejosSeed.forEachIndexed { index, consejo ->
+                val id = index + 1
+                db.execSQL(
+                    "INSERT INTO consejos (id, titulo, contenido) " +
+                    "VALUES ($id, '${consejo.titulo.replace("'", "''")}', " +
+                    "'${consejo.contenido.replace("'", "''")}')"
+                )
+            }
         }
     }
 }

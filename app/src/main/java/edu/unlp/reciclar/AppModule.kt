@@ -14,6 +14,7 @@ import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.dao.LogroDao
 import edu.unlp.reciclar.data.local.dao.ReporteDao
 import edu.unlp.reciclar.data.local.dao.ResiduoDao
+import edu.unlp.reciclar.data.local.dao.TriviaDao
 import edu.unlp.reciclar.data.local.dao.UsuarioDao
 import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.data.remote.AuthAuthenticator
@@ -23,6 +24,7 @@ import edu.unlp.reciclar.data.repository.EstacionesRepository
 import edu.unlp.reciclar.data.repository.RankingRepository
 import edu.unlp.reciclar.data.repository.ReportesRepository
 import edu.unlp.reciclar.data.repository.ResiduosRepository
+import edu.unlp.reciclar.data.repository.TriviaRepository
 import edu.unlp.reciclar.data.repository.UserRepository
 import edu.unlp.reciclar.data.service.LogroService
 import edu.unlp.reciclar.data.source.SessionManager
@@ -118,6 +120,9 @@ object AppModule {
     @Provides
     fun provideResiduoDao(database: AppDatabase): ResiduoDao = database.residuoDao()
 
+    @Provides
+    fun provideTriviaDao(database: AppDatabase): TriviaDao = database.triviaDao()
+
     // ── Repositories ─────────────────────────────────────────
 
     @Provides
@@ -158,5 +163,11 @@ object AppModule {
     @Singleton
     fun provideEstacionesRepository(apiService: ApiService): EstacionesRepository {
         return EstacionesRepository(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTriviaRepository(triviaDao: TriviaDao, userRepository: UserRepository): TriviaRepository {
+        return TriviaRepository(triviaDao, userRepository)
     }
 }

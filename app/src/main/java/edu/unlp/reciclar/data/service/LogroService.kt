@@ -14,12 +14,17 @@ class LogroService @Inject constructor(
 ) {
     suspend fun evaluarLogros(usuarioId: Int) {
         logroDao.getAllLogros().forEach { logro ->
-            if (!logroDao.yaTieneLogro(usuarioId, logro.id)) {
-                if (cumpleCondicion(usuarioId, logro.condicion)) {
-                    logroDao.insert(
-                        UsuarioLogros(usuarioId, logro.id)
-                    )
+            try {
+                if (!logroDao.yaTieneLogro(usuarioId, logro.id)) {
+                    if (cumpleCondicion(usuarioId, logro.condicion)) {
+                        logroDao.insert(
+                            UsuarioLogros(usuarioId, logro.id)
+                        )
+                    }
                 }
+            } catch (e: Exception) {
+                // Si falla un logro individual, seguir con los demás
+                e.printStackTrace()
             }
         }
     }

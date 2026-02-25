@@ -42,6 +42,7 @@ class CuponesViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _cuponesState.value = emptyList()
+                _canjeResult.send(Result.failure(Exception("Error al recuperar los cupones: ${e.message}")))
             }
         }
     }

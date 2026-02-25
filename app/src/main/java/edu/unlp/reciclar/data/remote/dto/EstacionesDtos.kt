@@ -8,10 +8,3 @@ data class Estacion(
     val latitud: Double,
     val longitud: Double
 )
-
-// Mapeo helper
-fun Estacion.toRecyclingPoint() = RecyclingPoint(
-    name = this.nombre,
-    latitude = this.latitud,
-    longitude = this.longitud
-)

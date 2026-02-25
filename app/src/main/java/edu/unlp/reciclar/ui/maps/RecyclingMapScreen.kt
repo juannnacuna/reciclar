@@ -93,11 +93,8 @@ fun RecyclingMapScreen(
 
     // ── Estado del ViewModel observado reactivamente ──
     val points by viewModel.points.collectAsStateWithLifecycle()
-    val selectedPoint by viewModel.selectedPoint.collectAsStateWithLifecycle()
     val routeInfo by viewModel.routeInfo.collectAsStateWithLifecycle()
-    val originPoint by viewModel.originPoint.collectAsStateWithLifecycle()
     val transportMode by viewModel.transportMode.collectAsStateWithLifecycle()
-
     val defaultCenter = remember { GeoPoint(-34.9214, -57.9545) } // La Plata
 
     // ── Referencias mutables al MapView y overlay de ubicación ──

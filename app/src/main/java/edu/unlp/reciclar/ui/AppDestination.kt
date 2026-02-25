@@ -15,4 +15,5 @@ sealed class AppDestination(val route: String) {
     object Ranking : AppDestination("ranking")
     object Map : AppDestination("map") // <-- Nuevo destino para la pantalla de mapas
     object Estadistica : AppDestination("estadistica")
+    object Cupones : AppDestination("cupones")
 }

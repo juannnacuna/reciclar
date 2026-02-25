@@ -3,6 +3,7 @@ package edu.unlp.reciclar.ui
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Functions
@@ -40,6 +41,8 @@ import edu.unlp.reciclar.ui.estadistica.EstadisticaScreen
 import edu.unlp.reciclar.ui.maps.RecyclingMapScreen
 import edu.unlp.reciclar.ui.maps.RecyclingMapViewModel
 import edu.unlp.reciclar.ui.components.AppTopBar
+import edu.unlp.reciclar.ui.cupones.CuponesScreen
+import edu.unlp.reciclar.ui.cupones.CuponesViewModel
 import edu.unlp.reciclar.ui.estadistica.EstadisticaViewModel
 
 /**
@@ -55,7 +58,8 @@ private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.ScanQr, Icons.Default.QrCodeScanner, "Scan QR"),
     BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking"),
     BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, "Estadística"),
-    BottomNavItem(AppDestination.Map, Icons.Default.Place, "Mapa")
+    BottomNavItem(AppDestination.Map, Icons.Default.Place, "Mapa"),
+    BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, "Cupones")
 )
 
 /**
@@ -242,6 +246,13 @@ fun MainApp() {
                 composable(AppDestination.Map.route) {
                     val viewModel: RecyclingMapViewModel = hiltViewModel()
                     RecyclingMapScreen(
+                        viewModel = viewModel
+                    )
+                }
+
+                composable(AppDestination.Cupones.route) {
+                    val viewModel: CuponesViewModel = hiltViewModel()
+                    CuponesScreen(
                         viewModel = viewModel
                     )
                 }

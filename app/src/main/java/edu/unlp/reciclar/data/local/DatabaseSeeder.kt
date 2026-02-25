@@ -117,15 +117,18 @@ object DatabaseSeeder {
 
             // Cupones de prueba
             db.execSQL("""
-                INSERT INTO cupones (id, nombre, descripcionHtml, puntosNecesarios, vigencia)
+                INSERT INTO cupones (id, nombre, descripcion, puntosNecesarios, vigencia)
                 VALUES
-                (1, 'Café gratis', '<b>Café gratis</b> en buffet de la facultad', 200,
+                (1, 'Café gratis', 'Café gratis en buffet de la facultad', 200,
                     (CAST(strftime('%s','now') AS INTEGER) + 30 * 86400) * 1000),
             
                 (2, 'Descuento fotocopias', '10% de descuento en fotocopias', 150,
                     (CAST(strftime('%s','now') AS INTEGER) + 45 * 86400) * 1000),
             
                 (3, 'Sticker eco', 'Sticker exclusivo reciclador', 80,
+                    (CAST(strftime('%s','now') AS INTEGER) + 60 * 86400) * 1000),
+                    
+                (4, 'Tele 65pulgadas 4k', 'Si lo podes canjear es porque reciclaste el equivalente al seamse de Punta Lara', 9999999999,
                     (CAST(strftime('%s','now') AS INTEGER) + 60 * 86400) * 1000)
             """)
 

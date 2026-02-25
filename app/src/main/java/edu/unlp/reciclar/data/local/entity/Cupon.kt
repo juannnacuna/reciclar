@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class Cupon(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val nombre: String,
-    val descripcionHtml: String,
+    val descripcion: String,
     val puntosNecesarios: Int, // Costo del cupón
     val vigencia: Long
 )

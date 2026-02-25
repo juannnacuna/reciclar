@@ -269,6 +269,7 @@ private fun CuponItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = cupon.nombre,
+                fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(

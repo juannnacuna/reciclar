@@ -19,7 +19,7 @@ interface ResiduoDao {
             "AND (timestamp BETWEEN :startDate AND :endDate)")
     suspend fun getReciclajesByUsuario(usuarioId: Int, startDate: Long, endDate: Long): List<Residuo>
 
-    @Query("SELECT SUM(puntos) FROM residuos " +
+    @Query("SELECT COALESCE(SUM(puntos), 0) FROM residuos " +
             "WHERE usuarioId = :usuarioId")
     suspend fun puntosTotales(usuarioId: Int): Int
 

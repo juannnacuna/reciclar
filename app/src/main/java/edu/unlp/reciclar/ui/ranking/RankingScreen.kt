@@ -32,20 +32,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.domain.model.RankingEntry
-import edu.unlp.reciclar.ui.components.AppTopBar
 
 /**
  * Pantalla principal del Ranking implementada íntegramente en Compose.
  *
- * Recibe el [viewModel] desde el Fragment (patrón de interop recomendado),
- * y un lambda [onLogout] para desacoplar la acción del componente que la dispara.
+ * Recibe el [viewModel] inyectado por Hilt desde el NavHost.
+ *
+ * Nota: AppTopBar se renderiza a nivel de Scaffold en MainApp.kt,
+ * por lo que esta pantalla no necesita saber sobre username/puntos/logout.
  */
 @Composable
 fun RankingScreen(
     viewModel: RankingViewModel,
-    username: String?,
-    puntosDisponibles: Int?,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // collectAsStateWithLifecycle(): convierte un StateFlow en State<T> de Compose.
@@ -69,11 +67,6 @@ fun RankingScreen(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        AppTopBar(
-            username = username,
-            puntosDisponibles = puntosDisponibles,
-            onLogout = onLogout
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()

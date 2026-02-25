@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Functions
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -36,6 +37,10 @@ import edu.unlp.reciclar.ui.ranking.RankingViewModel
 import edu.unlp.reciclar.ui.signup.SignupScreen
 import edu.unlp.reciclar.ui.signup.SignupViewModel
 import edu.unlp.reciclar.ui.estadistica.EstadisticaScreen
+import edu.unlp.reciclar.ui.maps.RecyclingMapScreen
+import edu.unlp.reciclar.ui.maps.RecyclingMapViewModel
+import edu.unlp.reciclar.ui.components.AppTopBar
+import edu.unlp.reciclar.ui.estadistica.EstadisticaViewModel
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -49,7 +54,8 @@ private data class BottomNavItem(
 private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.ScanQr, Icons.Default.QrCodeScanner, "Scan QR"),
     BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, "Ranking"),
-    BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, "Estadística")
+    BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, "Estadística"),
+    BottomNavItem(AppDestination.Map, Icons.Default.Place, "Mapa")
 )
 
 /**
@@ -77,7 +83,7 @@ fun MainApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val showBottomBar = bottomNavItems.any { item ->
+    val showBars = bottomNavItems.any { item ->
         currentDestination?.hierarchy?.any { it.route == item.destination.route } == true
     }
 
@@ -101,8 +107,17 @@ fun MainApp() {
 
     MaterialTheme {
         Scaffold(
+            topBar = {
+                if (showBars) {
+                    AppTopBar(
+                        username = userState?.username,
+                        puntosDisponibles = userState?.puntosDisponibles,
+                        onLogout = { appViewModel.onLogoutClicked() }
+                    )
+                }
+            },
             bottomBar = {
-                if (showBottomBar) {
+                if (showBars) {
                     NavigationBar {
                         bottomNavItems.forEach { item ->
                             val selected = currentDestination?.hierarchy
@@ -190,8 +205,6 @@ fun MainApp() {
                     val scanner = GmsBarcodeScanning.getClient(context)
                     ScanQrScreen(
                         viewModel = viewModel,
-                        username = userState?.username,
-                        puntosDisponibles = userState?.puntosDisponibles,
                         onStartScan = {
                             scanner.startScan()
                                 .addOnSuccessListener { barcode ->
@@ -208,26 +221,28 @@ fun MainApp() {
                                 .addOnFailureListener { e ->
                                     viewModel.onScanError("Error al iniciar escáner: ${e.message}")
                                 }
-                        },
-                        onLogout = { appViewModel.onLogoutClicked() }
+                        }
                     )
                 }
 
                 composable(AppDestination.Ranking.route) {
                     val viewModel: RankingViewModel = hiltViewModel()
                     RankingScreen(
-                        viewModel = viewModel,
-                        username = userState?.username,
-                        puntosDisponibles = userState?.puntosDisponibles,
-                        onLogout = { appViewModel.onLogoutClicked() }
+                        viewModel = viewModel
                     )
                 }
 
                 composable(AppDestination.Estadistica.route) {
+                    val viewModel: EstadisticaViewModel = hiltViewModel()
                     EstadisticaScreen(
-                        username = userState?.username,
-                        puntosDisponibles = userState?.puntosDisponibles,
-                        onLogout = { appViewModel.onLogoutClicked() }
+                        viewModel = viewModel
+                    )
+                }
+
+                composable(AppDestination.Map.route) {
+                    val viewModel: RecyclingMapViewModel = hiltViewModel()
+                    RecyclingMapScreen(
+                        viewModel = viewModel
                     )
                 }
             }

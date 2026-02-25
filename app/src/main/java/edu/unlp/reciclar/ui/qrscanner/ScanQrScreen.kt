@@ -21,12 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.unlp.reciclar.ui.components.AppTopBar
 import edu.unlp.reciclar.ui.utils.ReporteModal
 
 /**
@@ -39,32 +39,28 @@ import edu.unlp.reciclar.ui.utils.ReporteModal
  *   "inversión de control" y es la forma idiomática de integrar APIs
  *   imperativas de Android con Compose.
  *
+ * onClaimPoints: lambda que llama a viewModel.reclamarPuntos().
+ *   También se podría llamar directamente desde el Screen, pero separarlo
+ *   mantiene la pantalla desacoplada del ViewModel si fuera necesario testearla.
  * El Screen permite que el usuario escanee QR, reclame puntos, o reporte residuos
  * a través de un modal dedicado.
  */
 @Composable
 fun ScanQrScreen(
     viewModel: ScanQrViewModel,
-    username: String?,
-    puntosDisponibles: Int?,
     onStartScan: () -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val statusMessage by viewModel.statusMessage.collectAsStateWithLifecycle()
     val isClaimButtonVisible by viewModel.isClaimButtonVisible.collectAsStateWithLifecycle()
     val isReportButtonVisible by viewModel.isReportButtonVisible.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val ctx = LocalContext.current
     val showReporteModal by viewModel.showReporteModal.collectAsStateWithLifecycle()
     val tipoSugerido by viewModel.tipoSugerido.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
 
-        AppTopBar(
-            username = username,
-            puntosDisponibles = puntosDisponibles,
-            onLogout = onLogout
-        )
 
         Column(
             modifier = Modifier

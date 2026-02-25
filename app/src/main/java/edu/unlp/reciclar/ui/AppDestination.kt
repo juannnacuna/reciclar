@@ -13,5 +13,6 @@ sealed class AppDestination(val route: String) {
     object Signup : AppDestination("signup")
     object ScanQr : AppDestination("scan_qr")
     object Ranking : AppDestination("ranking")
+    object Map : AppDestination("map") // <-- Nuevo destino para la pantalla de mapas
     object Estadistica : AppDestination("estadistica")
 }

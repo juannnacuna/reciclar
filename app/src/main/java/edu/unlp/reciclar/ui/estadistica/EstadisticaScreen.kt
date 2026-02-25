@@ -35,9 +35,6 @@ import edu.unlp.reciclar.ui.components.AppTopBar
 @Composable
 fun EstadisticaScreen(
     modifier: Modifier = Modifier,
-    username: String? = null,
-    puntosDisponibles: Int? = null,
-    onLogout: () -> Unit = {},
     viewModel: EstadisticaViewModel = hiltViewModel()
 ) {
     val tiposStats by viewModel.tiposStats.collectAsStateWithLifecycle()
@@ -90,11 +87,6 @@ fun EstadisticaScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        AppTopBar(
-            username = username,
-            puntosDisponibles = puntosDisponibles,
-            onLogout = onLogout
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()

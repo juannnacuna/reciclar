@@ -105,6 +105,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    // ZXing para generación de QR
+    implementation("com.google.zxing:core:3.5.3")
+
     // openstreetmap
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.github.MKergall:osmbonuspack:6.9.0")

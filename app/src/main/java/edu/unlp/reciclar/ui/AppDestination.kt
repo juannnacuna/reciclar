@@ -17,4 +17,5 @@ sealed class AppDestination(val route: String) {
     object Estadistica : AppDestination("estadistica")
     object Cupones : AppDestination("cupones")
     object Logros : AppDestination("logros")
+    object Trivia : AppDestination("trivia")
 }

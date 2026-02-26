@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Fondo circular azul -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M48,48m-44,0a44,44 0,1 1,88 0a44,44 0,1 1,-88 0" />
+    <!-- Botella de plástico simplificada -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,28L56,28L56,34L60,38L60,68C60,70.2 58.2,72 56,72L40,72C37.8,72 36,70.2 36,68L36,38L40,34Z" />
+    <!-- Símbolo de reciclaje -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M48,48L44,56L52,56Z" />
+</vector>

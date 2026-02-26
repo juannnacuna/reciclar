@@ -30,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import edu.unlp.reciclar.R
 import edu.unlp.reciclar.data.local.entity.Logro
 
 data class LogroScreen(
@@ -93,6 +96,14 @@ fun LogroItem(
 ) {
     val alpha = if (logroScreen.obtenido) 1f else 0.4f
 
+    val context = LocalContext.current
+    val imageResId = context.resources.getIdentifier(
+        "logro_${logroScreen.logro.id}",
+        "drawable",
+        context.packageName
+    )
+    val finalResId = if (imageResId != 0) imageResId else R.drawable.logro_default
+
     Card(
         modifier = modifier
             .alpha(alpha)
@@ -107,11 +118,16 @@ fun LogroItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(id = finalResId),
+                contentDescription = logroScreen.logro.nombre,
+                modifier = Modifier.size(48.dp)
+            )
             Text(
                 text = logroScreen.logro.nombre,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }

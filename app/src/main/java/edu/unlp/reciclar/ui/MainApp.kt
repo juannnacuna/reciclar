@@ -4,8 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Functions
@@ -50,6 +50,8 @@ import edu.unlp.reciclar.ui.cupones.CuponesViewModel
 import edu.unlp.reciclar.ui.estadistica.EstadisticaViewModel
 import edu.unlp.reciclar.ui.logros.LogrosScreen
 import edu.unlp.reciclar.ui.logros.LogrosViewModel
+import edu.unlp.reciclar.ui.trivia.TriviaScreen
+import edu.unlp.reciclar.ui.trivia.TriviaViewModel
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -66,7 +68,8 @@ private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, ""),
     BottomNavItem(AppDestination.Map, Icons.Default.Place, ""),
     BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, ""),
-    BottomNavItem(AppDestination.Logros, Icons.Default.EmojiEvents, "")
+    BottomNavItem(AppDestination.Logros, Icons.Default.EmojiEvents, ""),
+    BottomNavItem(AppDestination.Trivia, Icons.Default.Eco, "")
 )
 
 private val ReciclarColorScheme = lightColorScheme(
@@ -293,6 +296,13 @@ fun MainApp() {
                 composable(AppDestination.Logros.route) {
                     val viewModel: LogrosViewModel = hiltViewModel()
                     LogrosScreen(
+                        viewModel = viewModel
+                    )
+                }
+
+                composable(AppDestination.Trivia.route) {
+                    val viewModel: TriviaViewModel = hiltViewModel()
+                    TriviaScreen(
                         viewModel = viewModel
                     )
                 }

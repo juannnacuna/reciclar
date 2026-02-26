@@ -9,6 +9,7 @@ import edu.unlp.reciclar.data.remote.dto.ReclamarResiduoResponse
 import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.data.service.LogroService
 import edu.unlp.reciclar.domain.model.ResultadoReclamo
+import edu.unlp.reciclar.ui.AppViewModel
 
 
 class ResiduosRepository(

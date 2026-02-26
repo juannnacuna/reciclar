@@ -3,6 +3,8 @@ package edu.unlp.reciclar.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import edu.unlp.reciclar.data.local.dao.LogroDao
+import edu.unlp.reciclar.data.local.entity.Logro
 import edu.unlp.reciclar.data.repository.AuthRepository
 import edu.unlp.reciclar.data.repository.UserRepository
 import edu.unlp.reciclar.domain.model.Usuario
@@ -14,6 +16,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+data class ProporcionLogros (
+    val totales: Int,
+    val obtenidos: Int
+)
 /**
  * ViewModel scoped a la actividad (activity-scoped).
  *
@@ -28,7 +35,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val logroDao: LogroDao
 ) : ViewModel() {
 
     // Channel en lugar de LiveData<Event<...>>:
@@ -38,6 +46,9 @@ class AppViewModel @Inject constructor(
 
     private val _userState = MutableStateFlow<Usuario?>(null)
     val userState: StateFlow<Usuario?> = _userState.asStateFlow()
+
+    private val _logroState = MutableStateFlow<ProporcionLogros?>(null)
+    val logroState: StateFlow<ProporcionLogros?> = _logroState.asStateFlow()
 
     init {
         // Si ya hay sesión activa al crear el ViewModel (re-entrada a la app),
@@ -53,7 +64,12 @@ class AppViewModel @Inject constructor(
      */
     fun loadUser() {
         viewModelScope.launch {
-            userRepository.getUser().onSuccess { _userState.value = it }
+            userRepository.getUser().onSuccess { user ->
+                _userState.value = user
+                val total = logroDao.getAllLogros().size
+                val obtenidos = logroDao.logrosObtenidos(user.id)
+                _logroState.value = ProporcionLogros(totales = total, obtenidos = obtenidos)
+            }
         }
     }
 

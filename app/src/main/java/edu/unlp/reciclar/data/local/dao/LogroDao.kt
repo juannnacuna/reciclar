@@ -20,4 +20,8 @@ interface LogroDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM usuario_logros WHERE usuarioId = :userId AND logroId = :logroId)")
     suspend fun yaTieneLogro(userId: Int, logroId: Int): Boolean
+
+    @Query("SELECT COUNT(*) FROM usuario_logros WHERE usuarioId = :usuarioId")
+    suspend fun logrosObtenidos(usuarioId: Int): Int
+
 }

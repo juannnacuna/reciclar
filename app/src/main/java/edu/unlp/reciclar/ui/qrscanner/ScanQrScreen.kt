@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import edu.unlp.reciclar.ui.AppViewModel
 import edu.unlp.reciclar.ui.utils.ReporteModal
 import java.io.File
 
@@ -65,6 +66,7 @@ import java.io.File
 @Composable
 fun ScanQrScreen(
     viewModel: ScanQrViewModel,
+    appViewModel: AppViewModel,
     onStartScan: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -223,7 +225,10 @@ fun ScanQrScreen(
             if (isClaimButtonVisible) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
-                    onClick = { viewModel.reclamarPuntos() },
+                    onClick = {
+                        viewModel.reclamarPuntos()
+                        appViewModel.loadUser()
+                              },
                     enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth()
                 ) {

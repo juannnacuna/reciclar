@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Functions
@@ -63,7 +64,7 @@ private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, ""),
     BottomNavItem(AppDestination.Map, Icons.Default.Place, ""),
     BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, ""),
-    BottomNavItem(AppDestination.Logros, Icons.Default.Done, "")
+    BottomNavItem(AppDestination.Logros, Icons.Default.EmojiEvents, "")
 )
 
 /**
@@ -84,6 +85,7 @@ fun MainApp() {
     val context = LocalContext.current
 
     val userState by appViewModel.userState.collectAsStateWithLifecycle()
+    val logrosState by appViewModel.logroState.collectAsStateWithLifecycle()
 
     // currentBackStackEntryAsState(): State<NavBackStackEntry?> que se actualiza
     // en cada navegación. Lo usamos para saber qué destino está activo y así
@@ -120,6 +122,8 @@ fun MainApp() {
                     AppTopBar(
                         username = userState?.username,
                         puntosDisponibles = userState?.puntosDisponibles,
+                        logrosObtenidos = logrosState?.obtenidos,
+                        logrosTotales = logrosState?.totales,
                         onLogout = { appViewModel.onLogoutClicked() }
                     )
                 }
@@ -229,7 +233,8 @@ fun MainApp() {
                                 .addOnFailureListener { e ->
                                     viewModel.onScanError("Error al iniciar escáner: ${e.message}")
                                 }
-                        }
+                        },
+                        appViewModel = appViewModel
                     )
                 }
 
@@ -257,7 +262,8 @@ fun MainApp() {
                 composable(AppDestination.Cupones.route) {
                     val viewModel: CuponesViewModel = hiltViewModel()
                     CuponesScreen(
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        appViewModel = appViewModel
                     )
                 }
 

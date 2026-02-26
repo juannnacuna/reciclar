@@ -74,11 +74,11 @@ private val bottomNavItems = listOf(
 )
 
 private val ReciclarColorScheme = lightColorScheme(
-    primary = Color(0xFF2E7D32),             // Verde oscuro
+    primary = Color(0xFF2E7D32),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFA5D6A7),    // Verde claro para contenedores
+    primaryContainer = Color(0xFFA5D6A7),
     onPrimaryContainer = Color(0xFF002204),
-    secondary = Color(0xFF52796F),           // Verde grisáceo
+    secondary = Color(0xFF52796F),
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFCDE5D9),
     onSecondaryContainer = Color(0xFF0F2921),
@@ -94,19 +94,8 @@ private val ReciclarColorScheme = lightColorScheme(
     onError = Color.White,
 )
 
-/**
- * Composable raíz de la aplicación.
- *
- * Conforma la vista base. Contiene:
- * - NavHost
- *   Cada `composable("ruta") { ... }` es un destino.
- * - NavigationBar
- * - Observador de logout.
- */
 @Composable
 fun MainApp() {
-    // hiltViewModel() en el nivel de MainApp: AppViewModel dura mientras
-    // MainActivity esté viva — equivalente a activityViewModels() en Fragments.
     val appViewModel: AppViewModel = hiltViewModel()
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -114,9 +103,6 @@ fun MainApp() {
     val userState by appViewModel.userState.collectAsStateWithLifecycle()
     val logrosState by appViewModel.logroState.collectAsStateWithLifecycle()
 
-    // currentBackStackEntryAsState(): State<NavBackStackEntry?> que se actualiza
-    // en cada navegación. Lo usamos para saber qué destino está activo y así
-    // mostrar la NavigationBar solo en las pantallas correctas.
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -124,11 +110,6 @@ fun MainApp() {
         currentDestination?.hierarchy?.any { it.route == item.destination.route } == true
     }
 
-    // Observador de logout centralizado.
-    // LaunchedEffect(Unit): corre indefinidamente mientras MainApp esté en composición,
-    // coleccionando el Flow de eventos de logout del Channel del AppViewModel.
-    // Al recibir un evento Success, navega a Login limpiando toda la back stack
-    // (popUpTo(0) inclusive = true).
     LaunchedEffect(Unit) {
         appViewModel.logoutEvent.collect { result ->
             result.onSuccess {
@@ -174,13 +155,6 @@ fun MainApp() {
                             NavigationBarItem(
                                 selected = selected,
                                 onClick = {
-                                    // Patrón estándar para bottom nav en Compose:
-                                    // - popUpTo(startDestination) limpia la pila hasta la
-                                    //   raíz del grafo al cambiar pestaña.
-                                    // - saveState/restoreState preserva el estado de scroll
-                                    //   y datos de cada pestaña al volver a ella.
-                                    // - launchSingleTop evita duplicar el destino si ya
-                                    //   estás en esa pestaña.
                                     navController.navigate(item.destination.route) {
                                         popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
@@ -202,8 +176,6 @@ fun MainApp() {
                 }
             }
         ) { paddingValues ->
-            // Cada bloque composable { } es un destino.
-            // hiltViewModel() inyecta ViewModels con Hilt sin necesidad de Fragments.
             NavHost(
                 navController = navController,
                 startDestination = AppDestination.Login.route,
@@ -218,8 +190,6 @@ fun MainApp() {
                             Toast.makeText(context, "Bienvenido", Toast.LENGTH_LONG).show()
                             appViewModel.loadUser()
                             navController.navigate(AppDestination.ScanQr.route) {
-                                // Equivalente a app:popUpTo="@id/loginFragment" popUpToInclusive="true"
-                                // del nav_graph.xml — Login no queda en la back stack.
                                 popUpTo(AppDestination.Login.route) { inclusive = true }
                             }
                         },
@@ -247,9 +217,6 @@ fun MainApp() {
 
                 composable(AppDestination.ScanQr.route) {
                     val viewModel: ScanQrViewModel = hiltViewModel()
-                    // LocalContext.current: reemplaza requireContext() de Fragment.
-                    // Da acceso al Context de Android desde cualquier Composable sin
-                    // necesidad de pasarlo como parámetro explícito.
                     val scanner = GmsBarcodeScanning.getClient(context)
                     ScanQrScreen(
                         viewModel = viewModel,

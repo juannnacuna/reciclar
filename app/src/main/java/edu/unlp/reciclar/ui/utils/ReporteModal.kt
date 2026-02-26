@@ -97,7 +97,6 @@ fun ReporteModal(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // ── Desplegable de tipo de residuo ──────────────────────────────
                     ExposedDropdownMenuBox(
                         expanded = expanded,
                         onExpandedChange = { if (!isLoading) expanded = it },
@@ -136,11 +135,9 @@ fun ReporteModal(
                         }
                     }
 
-                    // ── Sección de foto ─────────────────────────────────────────────
                     if (onTakePhoto != null) {
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        // Si ya hay una foto, muestra miniatura + checkmark
                         if (photoPath.isNotBlank()) {
                             val bitmap = remember(photoPath) {
                                 BitmapFactory.decodeFile(photoPath)?.asImageBitmap()

@@ -21,12 +21,10 @@ class AuthRepository(
                 val response = apiService.login(LoginRequest(username, password))
                 if (response.isSuccessful) {
                     val tokens = response.body()
-                    // Validación explícita de los tokens
                     if (tokens != null && !tokens.accessToken.isNullOrBlank() && !tokens.refreshToken.isNullOrBlank()) {
                         sessionManager.saveTokens(tokens.accessToken, tokens.refreshToken)
                         Result.success(Unit)
                     } else {
-                        // La respuesta fue exitosa pero el cuerpo es inválido o no contiene los tokens
                         Result.failure(Exception("Respuesta inválida del servidor"))
                     }
                 } else {

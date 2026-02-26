@@ -68,26 +68,22 @@ fun TriviaScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // ── Header ───────────────────────────────────────────
         Text(
             text = "Eco Trivia",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
 
-        // ── Estadísticas ─────────────────────────────────────
         EstadisticasCard(
             respondidas = uiState.estadisticas.respondidas,
             correctas = uiState.estadisticas.correctas,
             totalDisponibles = uiState.estadisticas.totalDisponibles
         )
 
-        // ── Consejo del día ──────────────────────────────────
         uiState.consejoActual?.let { consejo ->
             ConsejoCard(consejo = consejo)
         }
 
-        // ── Trivia ───────────────────────────────────────────
         uiState.triviaActual?.let { trivia ->
             TriviaCard(
                 trivia = trivia,

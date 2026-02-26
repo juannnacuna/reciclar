@@ -20,7 +20,6 @@ class ResiduosRepository(
 ) {
 
     suspend fun reclamarResiduo(rawJson: String): Result<ResultadoReclamo> {
-        // Intenta parsear el QR
         val qrData = try {
             Gson().fromJson(rawJson, QrData::class.java)
         } catch (e: Exception) {
@@ -30,11 +29,9 @@ class ResiduosRepository(
         val response = apiService.reclamarResiduo(ReclamarResiduoRequest(qrData.id))
 
         if (response.isSuccessful) {
-            // Obtener el ID del usuario actualmente logueado
             val usuarioId = usuarioRepository.getUser().getOrNull()?.id
                 ?: return Result.failure(Exception("No hay usuario logueado"))
 
-            // Crear y guardar el residuo en la base de datos local
             val residuo = Residuo(
                 usuarioId = usuarioId,
                 timestamp = System.currentTimeMillis(),
@@ -46,8 +43,6 @@ class ResiduosRepository(
             residuosDao.insertReciclaje(residuo)
             logroService.evaluarLogros(usuarioId)
 
-            // Los puntos se calculan automáticamente desde la vista usuarios_con_puntos
-            // no es necesario actualizarlos manualmente en la entidad Usuario.
 
             return Result.success(
                 ResultadoReclamo(

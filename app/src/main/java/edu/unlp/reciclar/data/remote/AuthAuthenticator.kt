@@ -13,7 +13,6 @@ class AuthAuthenticator(
 
     override fun authenticate(route: Route?, response: Response): Request? {
 
-        // Evitar loop infinito: contar reintentos previos
         if (responseCount(response) >= 2) {
             Log.d(TAG, "Demasiados reintentos de refresh, abortando")
             return null
@@ -37,7 +36,6 @@ class AuthAuthenticator(
                     .build()
             } else {
                 Log.d(TAG, "Refresh fallido: ${refreshResponse.code()}")
-                // Si el refresh falla, limpiar tokens para no reintentar
                 tokenManager.clearTokens()
                 null
             }

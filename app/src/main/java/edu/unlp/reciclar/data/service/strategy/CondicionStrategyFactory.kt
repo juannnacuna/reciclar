@@ -2,15 +2,7 @@ package edu.unlp.reciclar.data.service.strategy
 
 import javax.inject.Inject
 
-/**
- * Factory que resuelve qué [CondicionStrategy] usar según el campo "tipo" del JSON.
- *
- * Para agregar un nuevo tipo de logro:
- *   1. Crear una clase que implemente CondicionStrategy
- *   2. Registrarla en el map de esta factory
- *
- * No hace falta tocar LogroService ni ningún when().
- */
+/** Resuelve qué [CondicionStrategy] usar según el campo "tipo" del JSON. */
 class CondicionStrategyFactory @Inject constructor(
     puntosTotales: PuntosTotalesStrategy,
     residuosTipo: ResiduosTipoStrategy,

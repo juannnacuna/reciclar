@@ -20,7 +20,6 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
     private val _statusMessage = MutableStateFlow("Presiona el botón para escanear un código QR")
     val statusMessage: StateFlow<String> = _statusMessage
 
-    // Evento one-shot que se emite cuando los puntos se reclaman exitosamente.
     private val _puntosReclamados = Channel<Unit>(Channel.BUFFERED)
     val puntosReclamados = _puntosReclamados.receiveAsFlow()
 
@@ -111,7 +110,6 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
     }
 
     fun reportarResiduo() {
-        // Pre-poblar el tipo desde el QR para que el usuario no tenga que buscarlo
         _tipoSugerido.value = _qrData.value?.tipo ?: ""
         _showReporteModal.value = true
     }

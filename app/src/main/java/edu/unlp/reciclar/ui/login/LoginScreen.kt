@@ -30,11 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
- * Pantalla de Login implementada en Compose.
- *
- * Recibe lambdas de navegación en lugar de un NavController.
- * Esto mantiene el Composable independiente del sistema de navegación,
- * y el Fragment (o en el futuro, la NavGraph de Compose) decide cómo navegar.
+ * Pantalla de Login.
  */
 @Composable
 fun LoginScreen(
@@ -50,9 +46,6 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // Comprobación de sesión existente al entrar a la pantalla.
-    // LaunchedEffect(Unit): key = Unit nunca cambia, así que este efecto corre
-    // solo una vez cuando el Composable entra en composición.
     LaunchedEffect(Unit) {
         if (isLoggedIn()) onAlreadyLoggedIn()
     }
@@ -85,9 +78,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // OutlinedTextField: reemplaza TextInputLayout + TextInputEditText.
-        // value + onValueChange = patrón "controlled" — el estado es nuestro,
-        // no del widget.
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -105,19 +95,13 @@ fun LoginScreen(
             label = { Text("Contraseña") },
             singleLine = true,
             enabled = !isLoading,
-            // PasswordVisualTransformation: reemplaza android:inputType="textPassword"
             visualTransformation = PasswordVisualTransformation(),
-            // KeyboardOptions: le indica al teclado virtual que muestre el teclado
-            // de contraseñas (oculta sugerencias, etc.)
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Mensaje de error: visible solo cuando el estado es Error.
-        // No necesitamos visibility = GONE/VISIBLE — simplemente no emitimos
-        // el Text si no hay error. Compose solo renderiza lo que declaramos.
         if (errorMessage != null) {
             Text(
                 text = errorMessage,

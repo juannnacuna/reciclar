@@ -18,7 +18,6 @@ class UserRepository(
     suspend fun getUser(): Result<Usuario> {
         return withContext(Dispatchers.IO) {
 
-            // 1. Si ya tenemos el ID cacheado, consultamos la vista con puntos calculados
             cachedUserRemoteId?.let { id ->
                 val usuarioConPuntos = usuarioDao.getUsuarioConPuntosById(id.toString())
                 if (usuarioConPuntos != null) {
@@ -26,17 +25,13 @@ class UserRepository(
                 }
             }
 
-            // 2. Si no hay ID cacheado, vamos a la API
             try {
                 val response = apiService.getUserData()
                 if (response.isSuccessful && response.body() != null) {
                     val apiUserData = response.body()!!
 
-                    // A. Cacheamos para operaciones futuras
                     cachedUserRemoteId = apiUserData.id
 
-                    // B. Si existe en la db lo recuperamos, si no lo insertamos (su primer login).
-                    // En ambos casos consultamos la vista con puntos calculados.
                     val existeEnDb = usuarioDao.getUsuarioById(apiUserData.id.toString())
                     if (existeEnDb == null) {
                         usuarioDao.insertUsuario(apiUserData.toEntity())

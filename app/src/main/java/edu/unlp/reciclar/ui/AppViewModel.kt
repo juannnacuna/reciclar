@@ -22,17 +22,7 @@ data class ProporcionLogros (
     val totales: Int,
     val obtenidos: Int
 )
-/**
- * ViewModel scoped a la actividad (activity-scoped).
- *
- * Gestiona el estado compartido por todas las pantallas autenticadas:
- * - Datos del usuario logueado (username, puntosDisponibles).
- * - Evento de logout one-shot via Channel.
- * - isLoggedIn(): verificación de sesión activa (antes en LoginViewModel).
- *
- * Al estar instanciado en MainApp con hiltViewModel(), vive mientras
- * MainActivity esté viva, sin recrearse al navegar entre pantallas.
- */
+
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -41,8 +31,6 @@ class AppViewModel @Inject constructor(
     private val logroService: LogroService
 ) : ViewModel() {
 
-    // Channel en lugar de LiveData<Event<...>>:
-    // Garantiza entrega exactamente una vez (one-shot) sin el wrapper Event<T>.
     private val _logoutEvent = Channel<Result<Unit>>(Channel.BUFFERED)
     val logoutEvent = _logoutEvent.receiveAsFlow()
 
@@ -52,30 +40,23 @@ class AppViewModel @Inject constructor(
     private val _logroState = MutableStateFlow<ProporcionLogros?>(null)
     val logroState: StateFlow<ProporcionLogros?> = _logroState.asStateFlow()
 
-    // Logro recién obtenido para mostrar diálogo global.
     private val _logrosObtenidos = MutableStateFlow<List<Logro>>(emptyList())
     val logrosObtenidos: StateFlow<List<Logro>> = _logrosObtenidos.asStateFlow()
 
     init {
-        // Si ya hay sesión activa al crear el ViewModel (re-entrada a la app),
-        // cargamos los datos del usuario inmediatamente.
         if (authRepository.isLoggedIn()) loadUser()
 
-        // Observar logros nuevos emitidos por LogroService desde cualquier punto de la app.
         viewModelScope.launch {
             logroService.logroObtenido.collect { logro ->
                 _logrosObtenidos.value = _logrosObtenidos.value + logro
-                loadUser() // Actualizar proporción de logros en la top bar.
+                loadUser()
             }
         }
     }
 
     fun isLoggedIn(): Boolean = authRepository.isLoggedIn()
 
-    /**
-     * Carga los datos del usuario desde el repositorio.
-     * Se llama en el init (si ya hay sesión) y desde MainApp tras un login exitoso.
-     */
+    /** Carga los datos del usuario desde el repositorio. */
     fun loadUser() {
         viewModelScope.launch {
             userRepository.getUser().onSuccess { user ->

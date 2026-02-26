@@ -37,7 +37,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // ── Network ──────────────────────────────────────────────
 
     @Provides
     @Singleton
@@ -88,7 +87,6 @@ object AppModule {
         return retrofit.create(ApiService::class.java)
     }
 
-    // ── Database ─────────────────────────────────────────────
 
     @Provides
     @Singleton
@@ -123,7 +121,6 @@ object AppModule {
     @Provides
     fun provideTriviaDao(database: AppDatabase): TriviaDao = database.triviaDao()
 
-    // ── Repositories ─────────────────────────────────────────
 
     @Provides
     @Singleton

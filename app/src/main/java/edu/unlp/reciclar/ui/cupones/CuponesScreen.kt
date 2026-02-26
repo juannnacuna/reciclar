@@ -78,7 +78,6 @@ fun CuponesScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // ── Toggle de pestañas ──
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,7 +98,6 @@ fun CuponesScreen(
             )
         }
 
-        // ── Contenido según pestaña ──
         when (selectedTab) {
             0 -> MisCuponesTab(misCupones)
             1 -> CanjearCuponesTab(
@@ -122,9 +120,6 @@ fun CuponesScreen(
     }
 }
 
-// ──────────────────────────────────────────
-// Pestañas
-// ──────────────────────────────────────────
 
 @Composable
 private fun MisCuponesTab(misCupones: List<CanjeConDetalle>) {
@@ -186,9 +181,6 @@ private fun CanjearCuponesTab(
     }
 }
 
-// ──────────────────────────────────────────
-// Componentes
-// ──────────────────────────────────────────
 
 @Composable
 private fun TabButton(
@@ -263,7 +255,6 @@ private fun MiCuponItem(canjeConDetalle: CanjeConDetalle) {
                 )
             }
 
-            // Botón QR en la esquina inferior derecha (solo si no fue usado)
             if (!canje.fueUsado) {
                 IconButton(
                     onClick = { showQrDialog = true },
@@ -286,7 +277,6 @@ private fun MiCuponItem(canjeConDetalle: CanjeConDetalle) {
         }
     }
 
-    // Dialog con el QR
     if (showQrDialog) {
         CuponQrDialog(
             canjeConDetalle = canjeConDetalle,

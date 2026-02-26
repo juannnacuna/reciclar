@@ -47,21 +47,7 @@ import edu.unlp.reciclar.ui.utils.ReporteModal
 import java.io.File
 
 /**
- * Pantalla de escaneo QR implementada en Compose.
- *
- * [onStartScan]: lambda que lanza el scanner de GmsBarcodeScanning.
- *   Se implementa en el Fragment, que tiene el Context de ciclo de vida correcto.
- *   El Composable no sabe cómo funciona el scanner — solo sabe que hay que
- *   llamar a este lambda cuando el usuario toca el botón. Esto se llama
- *   "inversión de control" y es la forma idiomática de integrar APIs
- *   imperativas de Android con Compose.
- *
- * onClaimPoints: lambda que llama a viewModel.reclamarPuntos().
- *   También se podría llamar directamente desde el Screen, pero separarlo
- *   mantiene la pantalla desacoplada del ViewModel si fuera necesario testearla.
- * El Screen permite que el usuario escanee QR, reclame puntos, o reporte residuos
- * a través de un modal dedicado. Tras escanear se muestra la información del QR
- * para que el usuario pueda decidir si debe reportarlo o reclamar los puntos.
+ * Pantalla de escaneo QR.
  */
 @Composable
 fun ScanQrScreen(
@@ -86,13 +72,8 @@ fun ScanQrScreen(
         }
     }
 
-    // ── Cámara ────────────────────────────────────────────────────────────────
     val context = LocalContext.current
-    // File creado justo antes de lanzar la cámara, para recuperar su path tras la captura.
     var pendingPhotoFile by remember { mutableStateOf<File?>(null) }
-    // Flag que activa LaunchedEffect para lanzar la cámara FUERA del árbol del AlertDialog.
-    // Necesario porque llamar launch() directamente desde el onClick de un AlertDialog
-    // en Compose es poco fiable: el dialog está en un subtree de composición separado.
     var pendingLaunchCamera by remember { mutableStateOf(false) }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
@@ -103,9 +84,6 @@ fun ScanQrScreen(
         }
     }
 
-    // Launcher para solicitar permiso de cámara en tiempo de ejecución.
-    // Necesario porque el manifiesto declara CAMERA y algunos dispositivos
-    // exigen el grant explícito antes de resolver ACTION_IMAGE_CAPTURE.
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -114,7 +92,6 @@ fun ScanQrScreen(
         }
     }
 
-    // Se ejecuta en el ámbito del Screen (fuera del dialog) cuando el flag se activa.
     LaunchedEffect(pendingLaunchCamera) {
         if (pendingLaunchCamera) {
             pendingLaunchCamera = false
@@ -154,9 +131,6 @@ fun ScanQrScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Icon de Material — reemplaza el ImageView con ic_menu_camera.
-            // Material Icons incluye iconos vectoriales listos, sin necesidad de
-            // archivos drawable separados.
             Icon(
                 imageVector = Icons.Default.QrCodeScanner,
                 contentDescription = "Icono QR",
@@ -166,9 +140,6 @@ fun ScanQrScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ── Información del QR escaneado ──────────────────────────────────
-            // Se muestra mientras hay un QR activo, para que el usuario pueda
-            // evaluar si corresponde reclamar puntos o reportar el residuo.
             if (qrData != null) {
                 Card(
                     modifier = Modifier
@@ -208,8 +179,6 @@ fun ScanQrScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (isLoading) {
-                    // El indicador de carga reemplaza el texto del botón
-                    // mientras se procesa la solicitud — sin visibility = GONE/VISIBLE.
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -226,9 +195,6 @@ fun ScanQrScreen(
                 }
             }
 
-            // El botón "Reclamar Puntos" solo se emite al árbol de Compose
-            // cuando isClaimButtonVisible == true. No existe en el árbol cuando
-            // es false — no hay visibility = GONE, simplemente no se declara.
             if (isClaimButtonVisible) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
@@ -253,7 +219,6 @@ fun ScanQrScreen(
         }
     }
 
-    // Modal para reportar residuo
     ReporteModal(
         showDialog = showReporteModal,
         onDismiss = { viewModel.cerrarReporteModal() },
@@ -276,7 +241,6 @@ fun ScanQrScreen(
     )
 }
 
-// ── Helper composable ─────────────────────────────────────────────────────────
 
 @Composable
 private fun QrInfoRow(label: String, value: String) {

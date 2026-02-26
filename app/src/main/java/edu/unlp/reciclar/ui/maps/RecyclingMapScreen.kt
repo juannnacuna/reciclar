@@ -66,22 +66,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Locale
 
-/**
- * Pantalla de Mapa de Reciclaje — 100% Jetpack Compose.
- *
- * Usa AndroidView para envolver el MapView de osmdroid, ya que osmdroid
- * no tiene soporte nativo de Compose. El resto de la UI (botones de
- * transporte, panel de info de ruta) es Compose puro.
- *
- * Sigue el mismo patrón que ScanQrScreen y RankingScreen:
- *   - Recibe el ViewModel inyectado por Hilt desde el NavHost
- *   - Usa collectAsStateWithLifecycle() para observar StateFlows
- *
- * Nota: AppTopBar se renderiza a nivel de Scaffold en MainApp.kt,
- * por lo que esta pantalla no necesita saber sobre username/puntos/logout.
- *
- * @param viewModel ViewModel con estado de puntos, ruta, modo de transporte
- */
+/** Pantalla de Mapa de Reciclaje. */
 @Composable
 fun RecyclingMapScreen(
     viewModel: RecyclingMapViewModel,
@@ -91,20 +76,14 @@ fun RecyclingMapScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
 
-    // ── Estado del ViewModel observado reactivamente ──
     val points by viewModel.points.collectAsStateWithLifecycle()
     val routeInfo by viewModel.routeInfo.collectAsStateWithLifecycle()
     val transportMode by viewModel.transportMode.collectAsStateWithLifecycle()
-    val defaultCenter = remember { GeoPoint(-34.9214, -57.9545) } // La Plata
+    val defaultCenter = remember { GeoPoint(-34.9214, -57.9545) }
 
-    // ── Referencias mutables al MapView y overlay de ubicación ──
-    // remember { mutableStateOf } para que sobrevivan recomposiciones
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var locationOverlay by remember { mutableStateOf<MyLocationNewOverlay?>(null) }
 
-    // ── Permiso de ubicación con API de Compose ──
-    // rememberLauncherForActivityResult reemplaza a LocationPermissionHelper:
-    // no necesitamos una clase helper separada, Compose lo maneja directamente.
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -123,7 +102,6 @@ fun RecyclingMapScreen(
         }
     }
 
-    // ── Pedir permiso al entrar a la pantalla ──
     LaunchedEffect(Unit) {
         val hasPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
@@ -141,13 +119,9 @@ fun RecyclingMapScreen(
         }
     }
 
-    // ── Función para dibujar ruta (reemplaza RecyclingMapDataLoader) ──
-    // Al estar dentro del Composable, tiene acceso al coroutineScope y al mapView.
-    // Ya no necesitamos una clase separada que dependa de LifecycleOwner.
     fun drawRoute(from: GeoPoint, to: GeoPoint, mode: TransportMode) {
         val mv = mapView ?: return
 
-        // Limpiar rutas previas
         mv.overlays.removeAll { it is Polyline }
         viewModel.clearRouteInfo()
         mv.invalidate()
@@ -190,11 +164,9 @@ fun RecyclingMapScreen(
         }
     }
 
-    // ── Actualizar markers cuando cambia la lista de puntos ──
     LaunchedEffect(points, mapView) {
         val mv = mapView ?: return@LaunchedEffect
 
-        // Remover markers previos
         mv.overlays.removeAll { it is Marker }
 
         points.forEach { point ->
@@ -209,20 +181,16 @@ fun RecyclingMapScreen(
                 val selected = m.relatedObject as? RecyclingPoint
                     ?: return@setOnMarkerClickListener true
 
-                // Cerrar info windows anteriores
                 mv.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
                 viewModel.selectPoint(selected)
                 m.showInfoWindow()
 
-                // Centrar mapa en el punto seleccionado
                 mv.controller.animateTo(selected.toGeoPoint())
 
-                // Limpiar rutas previas
                 mv.overlays.removeAll { it is Polyline }
                 viewModel.clearRouteInfo()
                 mv.invalidate()
 
-                // Dibujar ruta si tenemos ubicación
                 val origin = viewModel.originPoint.value
                 if (origin != null) {
                     drawRoute(origin, selected.toGeoPoint(), viewModel.transportMode.value)
@@ -235,7 +203,6 @@ fun RecyclingMapScreen(
             mv.overlays.add(marker)
         }
 
-        // Centrar en el primer punto o en La Plata
         if (points.isNotEmpty()) {
             mv.controller.setCenter(points.first().toGeoPoint())
         } else {
@@ -244,20 +211,8 @@ fun RecyclingMapScreen(
         mv.invalidate()
     }
 
-    // ── UI ──
-    // El mapa ocupa todo el espacio asignado por el Scaffold.
-    // AppTopBar y NavigationBar se renderizan fuera de esta pantalla,
-    // a nivel de Scaffold en MainApp.kt, eliminando problemas de z-ordering
-    // con AndroidView y evitando duplicar lógica de usuario/logout en cada Screen.
-    // clipToBounds() es clave: las views nativas dentro de AndroidView tienen
-    // su propio sistema de z-ordering y pueden pintar fuera de sus bounds,
-    // invadiendo el espacio del TopBar. clipToBounds() recorta ese exceso.
     Box(modifier = modifier.fillMaxSize().clipToBounds()) {
 
-            // ── MapView envuelto en AndroidView ──
-            // AndroidView es el puente oficial de Compose para views imperativas.
-            // factory: se ejecuta una sola vez para crear la view.
-            // update: se ejecuta en cada recomposición (aquí no necesitamos nada).
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
@@ -267,7 +222,6 @@ fun RecyclingMapScreen(
                         controller.setZoom(15.0)
                         controller.setCenter(defaultCenter)
 
-                        // Overlay de ubicación del usuario
                         val locOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
                         val icon = createGreenLocationBitmap()
                         locOverlay.setPersonIcon(icon)
@@ -278,7 +232,6 @@ fun RecyclingMapScreen(
                         overlays.add(locOverlay)
                         locationOverlay = locOverlay
 
-                        // Overlay de eventos de mapa (tap para cerrar info windows)
                         val eventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
                             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
                                 overlays.removeAll { it is Polyline }
@@ -291,7 +244,6 @@ fun RecyclingMapScreen(
                         })
                         overlays.add(eventsOverlay)
 
-                        // Si el permiso ya estaba concedido, habilitar
                         if (locationPermissionGranted) {
                             locOverlay.enableMyLocation()
                             locOverlay.runOnFirstFix {
@@ -305,10 +257,6 @@ fun RecyclingMapScreen(
                 }
             )
 
-            // ── Manejar lifecycle del MapView ──
-            // MapView de osmdroid necesita onResume/onPause.
-            // DisposableEffect + LifecycleEventObserver es el equivalente
-            // en Compose de override fun onResume()/onPause() en Activity.
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
                     when (event) {
@@ -323,7 +271,6 @@ fun RecyclingMapScreen(
                 }
             }
 
-            // ── Selector de modo de transporte (siempre visible) ──
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -360,9 +307,6 @@ fun RecyclingMapScreen(
                 }
             }
 
-            // ── Panel de información de ruta (con animación) ──
-            // AnimatedVisibility reemplaza las animaciones manuales de
-            // alpha/translationY que teníamos con View.animate()
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -381,16 +325,6 @@ fun RecyclingMapScreen(
         }
 }
 
-// ──────────────────────────────────────────
-// Composables auxiliares extraídos
-// ──────────────────────────────────────────
-
-/**
- * Botón de modo de transporte (a pie / auto).
- *
- * Usa alpha para indicar si está seleccionado, igual que la versión anterior
- * pero ahora es un Composable reutilizable.
- */
 @Composable
 private fun TransportModeButton(
     text: String,
@@ -418,12 +352,7 @@ private fun TransportModeButton(
     }
 }
 
-/**
- * Panel inferior con información de la ruta calculada.
- *
- * Muestra modo de transporte, distancia y tiempo estimado.
- * Usa Surface con elevación para dar efecto de card flotante.
- */
+/** Panel inferior con información de la ruta calculada. */
 @Composable
 private fun RouteInfoPanel(routeInfo: RouteInfo) {
     val distance = if (routeInfo.distanceKm < 1) {
@@ -464,14 +393,7 @@ private fun RouteInfoPanel(routeInfo: RouteInfo) {
     }
 }
 
-// ──────────────────────────────────────────
-// Helpers
-// ──────────────────────────────────────────
-
-/**
- * Crea un bitmap circular verde con borde blanco para el marcador de ubicación.
- * Función pura sin dependencia de Context.
- */
+/** Crea un bitmap circular verde para el marcador de ubicación. */
 private fun createGreenLocationBitmap(): Bitmap {
     val size = 48
     val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)

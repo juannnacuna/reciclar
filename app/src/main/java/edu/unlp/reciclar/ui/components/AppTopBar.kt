@@ -27,12 +27,6 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Barra superior compartida por todas las pantallas autenticadas.
- *
- * Muestra el nombre del usuario y sus puntos disponibles a la izquierda,
- * y el botón de logout a la derecha.
- *
- * [username] y [puntosDisponibles] son nullable: mientras se carga el usuario
- * (estado inicial) simplemente no se renderizan esos textos.
  */
 @Composable
 fun AppTopBar(
@@ -110,7 +104,6 @@ fun AppTopBar(
 private fun AppTopBarPreview() {
     MaterialTheme {
         AppTopBar(
-            // Usuario de prueba del seeder — DatabaseSeeder.TEST_USERNAME
             username = "reciclador_pro",
             puntosDisponibles = 320,
             logrosObtenidos = 5,

@@ -79,6 +79,13 @@ fun ScanQrScreen(
     val qrData by viewModel.qrData.collectAsStateWithLifecycle()
     val photoPath by viewModel.photoPath.collectAsStateWithLifecycle()
 
+    // Actualizar datos del usuario DESPUÉS de que reclamarPuntos() termine.
+    LaunchedEffect(Unit) {
+        viewModel.puntosReclamados.collect {
+            appViewModel.loadUser()
+        }
+    }
+
     // ── Cámara ────────────────────────────────────────────────────────────────
     val context = LocalContext.current
     // File creado justo antes de lanzar la cámara, para recuperar su path tras la captura.
@@ -225,10 +232,7 @@ fun ScanQrScreen(
             if (isClaimButtonVisible) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
-                    onClick = {
-                        viewModel.reclamarPuntos()
-                        appViewModel.loadUser()
-                              },
+                    onClick = { viewModel.reclamarPuntos() },
                     enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth()
                 ) {

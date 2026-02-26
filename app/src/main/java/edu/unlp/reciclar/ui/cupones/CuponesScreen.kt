@@ -59,6 +59,7 @@ fun CuponesScreen(
         viewModel.canjeResult.collect { result ->
             result.onSuccess { message ->
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                appViewModel.loadUser()
             }.onFailure { error ->
                 Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
             }

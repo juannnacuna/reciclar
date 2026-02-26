@@ -16,11 +16,13 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,6 +67,27 @@ private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.Map, Icons.Default.Place, ""),
     BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, ""),
     BottomNavItem(AppDestination.Logros, Icons.Default.EmojiEvents, "")
+)
+
+private val ReciclarColorScheme = lightColorScheme(
+    primary = Color(0xFF2E7D32),             // Verde oscuro
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFA5D6A7),    // Verde claro para contenedores
+    onPrimaryContainer = Color(0xFF002204),
+    secondary = Color(0xFF52796F),           // Verde grisáceo
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFCDE5D9),
+    onSecondaryContainer = Color(0xFF0F2921),
+    tertiary = Color(0xFF388E3C),
+    onTertiary = Color.White,
+    background = Color(0xFFFCFDF7),
+    onBackground = Color(0xFF1A1C19),
+    surface = Color(0xFFFCFDF7),
+    onSurface = Color(0xFF1A1C19),
+    surfaceVariant = Color(0xFFDEE5DB),
+    onSurfaceVariant = Color(0xFF424940),
+    error = Color(0xFFBA1A1A),
+    onError = Color.White,
 )
 
 /**
@@ -115,7 +138,7 @@ fun MainApp() {
         }
     }
 
-    MaterialTheme {
+    MaterialTheme(colorScheme = ReciclarColorScheme) {
         Scaffold(
             topBar = {
                 if (showBars) {

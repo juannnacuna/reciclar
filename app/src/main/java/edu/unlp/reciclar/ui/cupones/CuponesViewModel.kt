@@ -90,13 +90,16 @@ class CuponesViewModel @Inject constructor(
                     cuponId = cupon.id
                 )
                 canjeDao.insertCanje(nuevoCanje)
-                _canjeResult.send(Result.success("¡Cupón canjeado con éxito!"))
+
                 try {
                     logroService.evaluarLogros(user.id)
-                } catch (e: Exception) {
-                    _canjeResult.send(Result.failure(Exception("Error al evaluar logros: ${e.message}")))
+                } catch (_: Exception) {
+                    // Los logros no son críticos; no bloquean el canje.
                 }
 
+                // Enviar resultado DESPUÉS de que todas las operaciones terminen,
+                // para que loadUser() en la UI vea el estado final.
+                _canjeResult.send(Result.success("¡Cupón canjeado con éxito!"))
             } catch (e: Exception) {
                 _canjeResult.send(Result.failure(Exception("Error al procesar el canje: ${e.message}")))
             }

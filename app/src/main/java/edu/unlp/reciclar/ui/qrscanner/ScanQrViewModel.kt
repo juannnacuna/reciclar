@@ -7,8 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import edu.unlp.reciclar.data.remote.dto.QrData
 import edu.unlp.reciclar.data.repository.ReportesRepository
 import edu.unlp.reciclar.data.repository.ResiduosRepository
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,6 +19,10 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
 
     private val _statusMessage = MutableStateFlow("Presiona el botón para escanear un código QR")
     val statusMessage: StateFlow<String> = _statusMessage
+
+    // Evento one-shot que se emite cuando los puntos se reclaman exitosamente.
+    private val _puntosReclamados = Channel<Unit>(Channel.BUFFERED)
+    val puntosReclamados = _puntosReclamados.receiveAsFlow()
 
     private val _isClaimButtonVisible = MutableStateFlow(false)
     val isClaimButtonVisible: StateFlow<Boolean> = _isClaimButtonVisible
@@ -88,6 +94,7 @@ class ScanQrViewModel @Inject constructor(private val residuosRepository: Residu
                 currentQrJson = null
                 _qrData.value = null
                 _photoPath.value = ""
+                _puntosReclamados.send(Unit)
             } else {
                 _statusMessage.value = result.exceptionOrNull()?.message ?: "Error desconocido"
                 _isClaimButtonVisible.value = true

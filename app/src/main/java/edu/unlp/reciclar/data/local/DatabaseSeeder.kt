@@ -256,7 +256,7 @@ object DatabaseSeeder {
             explicacion = "El compostaje es un proceso biológico que transforma residuos orgánicos (restos de comida, hojas, etc.) en abono natural rico en nutrientes para el suelo."
         ),
         TriviaSeed(
-            pregunta = "¿Qué isla de basura del Pacífico tiene un tamaño comparable a qué país?",
+            pregunta = "¿La Gran Isla de Basura del Pacífico tiene un tamaño comparable a qué país?",
             opcionA = "Uruguay",
             opcionB = "Francia",
             opcionC = "Argentina",

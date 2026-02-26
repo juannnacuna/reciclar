@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -128,6 +129,11 @@ fun ScanQrScreen(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
+            Icon(
+                imageVector = Icons.Filled.Eco,
+                contentDescription = "Puntos",
+                tint = MaterialTheme.colorScheme.primary
+            )
 
             Spacer(modifier = Modifier.height(48.dp))
 
@@ -202,7 +208,16 @@ fun ScanQrScreen(
                     enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Reclamar Puntos")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Reclamar puntos"
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Eco,
+                            contentDescription = "Puntos",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
 

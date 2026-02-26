@@ -3,13 +3,13 @@ package edu.unlp.reciclar.ui
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Functions
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -68,9 +68,9 @@ private val bottomNavItems = listOf(
     BottomNavItem(AppDestination.Ranking, Icons.Default.Leaderboard, ""),
     BottomNavItem(AppDestination.Estadistica, Icons.Default.Functions, ""),
     BottomNavItem(AppDestination.Map, Icons.Default.Place, ""),
-    BottomNavItem(AppDestination.Cupones, Icons.Default.AttachMoney, ""),
+    BottomNavItem(AppDestination.Cupones, Icons.Default.Eco, ""),
     BottomNavItem(AppDestination.Logros, Icons.Default.EmojiEvents, ""),
-    BottomNavItem(AppDestination.Trivia, Icons.Default.Eco, "")
+    BottomNavItem(AppDestination.Trivia, Icons.Default.Quiz, "")
 )
 
 private val ReciclarColorScheme = lightColorScheme(

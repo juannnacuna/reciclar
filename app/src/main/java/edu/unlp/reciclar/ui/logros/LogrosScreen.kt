@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -135,6 +132,14 @@ fun LogroItem(
 
 @Composable
 fun LogroDialog(logro: Logro, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val imageResId = context.resources.getIdentifier(
+        "logro_${logro.id}",
+        "drawable",
+        context.packageName
+    )
+    val finalResId = if (imageResId != 0) imageResId else R.drawable.logro_default
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -149,11 +154,10 @@ fun LogroDialog(logro: Logro, onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.Center,
             ) {
                 Image(
-                    imageVector = Icons.Default.EmojiEvents,
-                    contentDescription = "Logro",
+                    painter = painterResource(id = finalResId),
+                    contentDescription = logro.nombre,
                     modifier = Modifier.size(100.dp),
-                    contentScale = ContentScale.Fit,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    contentScale = ContentScale.Fit
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(

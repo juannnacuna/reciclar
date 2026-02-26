@@ -7,6 +7,7 @@ import edu.unlp.reciclar.data.local.dao.LogroDao
 import edu.unlp.reciclar.data.local.entity.Logro
 import edu.unlp.reciclar.data.repository.AuthRepository
 import edu.unlp.reciclar.data.repository.UserRepository
+import edu.unlp.reciclar.data.service.LogroService
 import edu.unlp.reciclar.domain.model.Usuario
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,8 @@ data class ProporcionLogros (
 class AppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val logroDao: LogroDao
+    private val logroDao: LogroDao,
+    private val logroService: LogroService
 ) : ViewModel() {
 
     // Channel en lugar de LiveData<Event<...>>:
@@ -50,10 +52,22 @@ class AppViewModel @Inject constructor(
     private val _logroState = MutableStateFlow<ProporcionLogros?>(null)
     val logroState: StateFlow<ProporcionLogros?> = _logroState.asStateFlow()
 
+    // Logro recién obtenido para mostrar diálogo global.
+    private val _logroObtenido = MutableStateFlow<Logro?>(null)
+    val logroObtenido: StateFlow<Logro?> = _logroObtenido.asStateFlow()
+
     init {
         // Si ya hay sesión activa al crear el ViewModel (re-entrada a la app),
         // cargamos los datos del usuario inmediatamente.
         if (authRepository.isLoggedIn()) loadUser()
+
+        // Observar logros nuevos emitidos por LogroService desde cualquier punto de la app.
+        viewModelScope.launch {
+            logroService.logroObtenido.collect { logro ->
+                _logroObtenido.value = logro
+                loadUser() // Actualizar proporción de logros en la top bar.
+            }
+        }
     }
 
     fun isLoggedIn(): Boolean = authRepository.isLoggedIn()
@@ -79,5 +93,10 @@ class AppViewModel @Inject constructor(
             if (result.isSuccess) _userState.value = null
             _logoutEvent.send(result)
         }
+    }
+
+    /** Llamado al cerrar el diálogo de logro obtenido. */
+    fun dismissLogroObtenido() {
+        _logroObtenido.value = null
     }
 }

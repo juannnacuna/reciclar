@@ -50,7 +50,7 @@ import edu.unlp.reciclar.ui.cupones.CuponesViewModel
 import edu.unlp.reciclar.ui.estadistica.EstadisticaViewModel
 import edu.unlp.reciclar.ui.logros.LogrosScreen
 import edu.unlp.reciclar.ui.logros.LogrosViewModel
-import edu.unlp.reciclar.ui.logros.LogroDialog
+import edu.unlp.reciclar.ui.logros.LogrosObtenidosDialog
 import edu.unlp.reciclar.ui.trivia.TriviaScreen
 import edu.unlp.reciclar.ui.trivia.TriviaViewModel
 
@@ -142,14 +142,13 @@ fun MainApp() {
         }
     }
 
-    val logroObtenido by appViewModel.logroObtenido.collectAsStateWithLifecycle()
+    val logrosNuevos by appViewModel.logrosObtenidos.collectAsStateWithLifecycle()
 
     MaterialTheme(colorScheme = ReciclarColorScheme) {
-        // Diálogo global de logro obtenido — se muestra por encima de cualquier pantalla.
-        logroObtenido?.let { logro ->
-            LogroDialog(
-                logro = logro,
-                onDismiss = { appViewModel.dismissLogroObtenido() }
+        if (logrosNuevos.isNotEmpty()) {
+            LogrosObtenidosDialog(
+                logros = logrosNuevos,
+                onDismiss = { appViewModel.dismissLogrosObtenidos() }
             )
         }
 

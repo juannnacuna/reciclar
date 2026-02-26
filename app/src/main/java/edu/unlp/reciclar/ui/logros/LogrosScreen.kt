@@ -1,5 +1,6 @@
 package edu.unlp.reciclar.ui.logros
 
+import android.media.MediaPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,17 +11,23 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,9 +38,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.unlp.reciclar.R
@@ -172,6 +181,109 @@ fun LogroDialog(logro: Logro, onDismiss: () -> Unit) {
                     textAlign = TextAlign.Center
                 )
             }
+        }
+    }
+}
+
+/** Diálogo global que muestra todos los logros recién obtenidos en una lista scrolleable. */
+@Composable
+fun LogrosObtenidosDialog(logros: List<Logro>, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+
+    // Reproducir sonido de victoria al mostrar el diálogo.
+    DisposableEffect(Unit) {
+        val notification = android.media.RingtoneManager.getDefaultUri(
+            android.media.RingtoneManager.TYPE_NOTIFICATION
+        )
+        val mediaPlayer = try {
+            MediaPlayer.create(context, notification)?.apply { start() }
+        } catch (_: Exception) { null }
+
+        onDispose { mediaPlayer?.release() }
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = if (logros.size == 1) "🏆 ¡Logro desbloqueado!" else "🏆 ¡${logros.size} logros desbloqueados!",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    modifier = Modifier.heightIn(max = 400.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(logros) { logro ->
+                        LogroObtenidoItem(logro)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                    Text("¡Genial!")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LogroObtenidoItem(logro: Logro) {
+    val context = LocalContext.current
+    val imageResId = context.resources.getIdentifier(
+        "logro_${logro.id}", "drawable", context.packageName
+    )
+    val finalResId = if (imageResId != 0) imageResId else R.drawable.logro_default
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = finalResId),
+                contentDescription = logro.nombre,
+                modifier = Modifier.size(64.dp),
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = logro.nombre,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = logro.descripcion,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

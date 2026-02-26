@@ -53,8 +53,8 @@ class AppViewModel @Inject constructor(
     val logroState: StateFlow<ProporcionLogros?> = _logroState.asStateFlow()
 
     // Logro recién obtenido para mostrar diálogo global.
-    private val _logroObtenido = MutableStateFlow<Logro?>(null)
-    val logroObtenido: StateFlow<Logro?> = _logroObtenido.asStateFlow()
+    private val _logrosObtenidos = MutableStateFlow<List<Logro>>(emptyList())
+    val logrosObtenidos: StateFlow<List<Logro>> = _logrosObtenidos.asStateFlow()
 
     init {
         // Si ya hay sesión activa al crear el ViewModel (re-entrada a la app),
@@ -64,7 +64,7 @@ class AppViewModel @Inject constructor(
         // Observar logros nuevos emitidos por LogroService desde cualquier punto de la app.
         viewModelScope.launch {
             logroService.logroObtenido.collect { logro ->
-                _logroObtenido.value = logro
+                _logrosObtenidos.value = _logrosObtenidos.value + logro
                 loadUser() // Actualizar proporción de logros en la top bar.
             }
         }
@@ -95,8 +95,8 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    /** Llamado al cerrar el diálogo de logro obtenido. */
-    fun dismissLogroObtenido() {
-        _logroObtenido.value = null
+    /** Limpia la lista de logros mostrados en el diálogo global. */
+    fun dismissLogrosObtenidos() {
+        _logrosObtenidos.value = emptyList()
     }
 }

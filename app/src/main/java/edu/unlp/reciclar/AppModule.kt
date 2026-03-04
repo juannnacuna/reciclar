@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import edu.unlp.reciclar.data.local.AppDatabase
 import edu.unlp.reciclar.data.local.DatabaseSeeder
 import edu.unlp.reciclar.data.local.dao.CanjeDao
+import edu.unlp.reciclar.data.local.dao.ConfiguracionDao
 import edu.unlp.reciclar.data.local.dao.CuponDao
 import edu.unlp.reciclar.data.local.dao.LogroDao
 import edu.unlp.reciclar.data.local.dao.ReporteDao
@@ -19,7 +20,9 @@ import edu.unlp.reciclar.data.local.dao.UsuarioDao
 import edu.unlp.reciclar.data.remote.ApiService
 import edu.unlp.reciclar.data.remote.AuthAuthenticator
 import edu.unlp.reciclar.data.remote.AuthInterceptor
+import edu.unlp.reciclar.data.remote.DynamicBaseUrlInterceptor
 import edu.unlp.reciclar.data.repository.AuthRepository
+import edu.unlp.reciclar.data.repository.ConfiguracionRepository
 import edu.unlp.reciclar.data.repository.EstacionesRepository
 import edu.unlp.reciclar.data.repository.RankingRepository
 import edu.unlp.reciclar.data.repository.ReportesRepository
@@ -61,11 +64,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDynamicBaseUrlInterceptor(): DynamicBaseUrlInterceptor {
+        return DynamicBaseUrlInterceptor()
+    }
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(
+        dynamicBaseUrlInterceptor: DynamicBaseUrlInterceptor,
         authInterceptor: AuthInterceptor,
         authAuthenticator: AuthAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(dynamicBaseUrlInterceptor)
             .addInterceptor(authInterceptor)
             .authenticator(authAuthenticator)
             .build()
@@ -96,6 +107,7 @@ object AppModule {
             AppDatabase::class.java,
             "app_database"
         )
+            .fallbackToDestructiveMigration()
             .addCallback(DatabaseSeeder.callback)
             .build()
     }
@@ -105,6 +117,9 @@ object AppModule {
 
     @Provides
     fun provideCanjeDao(database: AppDatabase): CanjeDao = database.canjeDao()
+
+    @Provides
+    fun provideConfiguracionDao(database: AppDatabase): ConfiguracionDao = database.configuracionDao()
 
     @Provides
     fun provideCuponDao(database: AppDatabase): CuponDao = database.cuponDao()
@@ -160,6 +175,12 @@ object AppModule {
     @Singleton
     fun provideEstacionesRepository(apiService: ApiService): EstacionesRepository {
         return EstacionesRepository(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConfiguracionRepository(configuracionDao: ConfiguracionDao): ConfiguracionRepository {
+        return ConfiguracionRepository(configuracionDao)
     }
 
     @Provides

@@ -53,6 +53,7 @@ import edu.unlp.reciclar.ui.logros.LogrosViewModel
 import edu.unlp.reciclar.ui.logros.LogrosObtenidosDialog
 import edu.unlp.reciclar.ui.trivia.TriviaScreen
 import edu.unlp.reciclar.ui.trivia.TriviaViewModel
+import edu.unlp.reciclar.ui.configuracion.ConfiguracionViewModel
 
 /**
  * Datos de cada pestaña del bottom nav.
@@ -97,11 +98,13 @@ private val ReciclarColorScheme = lightColorScheme(
 @Composable
 fun MainApp() {
     val appViewModel: AppViewModel = hiltViewModel()
+    val configViewModel: ConfiguracionViewModel = hiltViewModel()
     val navController = rememberNavController()
     val context = LocalContext.current
 
     val userState by appViewModel.userState.collectAsStateWithLifecycle()
     val logrosState by appViewModel.logroState.collectAsStateWithLifecycle()
+    val currentBaseUrl by configViewModel.currentBaseUrl.collectAsStateWithLifecycle()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -185,6 +188,8 @@ fun MainApp() {
                     val viewModel: LoginViewModel = hiltViewModel()
                     LoginScreen(
                         viewModel = viewModel,
+                        currentBaseUrl = currentBaseUrl,
+                        onSaveBaseUrl = { configViewModel.saveBaseUrl(it) },
                         isLoggedIn = { appViewModel.isLoggedIn() },
                         onLoginSuccess = {
                             Toast.makeText(context, "Bienvenido", Toast.LENGTH_LONG).show()
@@ -208,6 +213,8 @@ fun MainApp() {
                     val viewModel: SignupViewModel = hiltViewModel()
                     SignupScreen(
                         viewModel = viewModel,
+                        currentBaseUrl = currentBaseUrl,
+                        onSaveBaseUrl = { configViewModel.saveBaseUrl(it) },
                         onSignupSuccess = {
                             Toast.makeText(context, "Registro exitoso. Inicia sesión.", Toast.LENGTH_LONG).show()
                             navController.popBackStack()

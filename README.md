@@ -63,7 +63,7 @@ Para fines de demostración y desarrollo local, este entorno remoto está replic
 
 ## 🚀 Cómo probar la aplicación
 
-Podés probar la aplicación descargando el apk [acá](). 
+Podés probar la aplicación descargando el apk desde la pestaña de Releases o haciendo [click acá](https://github.com/juannnacuna/reciclar/releases/tag/v1.0).
 
 La otra opción es clonar el repositorio, compilar el código y ejecutarlo. Para este caso se recomienda usar Android Studio ya que facilita mucho la experencia dado el emulador integrado y las facilidades que brinda también para vincular un dispositivo móvil para hacer ejecutar la aplicación nativamente.
 
